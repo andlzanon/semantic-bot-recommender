@@ -92,7 +92,6 @@ def order_props(sub_graph: pd.DataFrame,  full_graph: pd.DataFrame):
     :return: ordered properties on a DataFrame
     """
     ordered_properties = sub_graph.loc[(sub_graph['prop'] != 'director') & (sub_graph['obj'] != 'Woody Allen')][['prop', 'obj']]
-    ordered_properties = ordered_properties.drop_duplicates()
     ordered_properties['entropy'] = np.nan
     ordered_properties['tf_idf'] = np.nan
     ordered_properties['value'] = np.nan
@@ -162,50 +161,41 @@ while not end_conversation:
     top_m, top_p = order_props_and_movies(sub_graph, prop_df, ratings)
 
     resp = "no"
-    prop_index = 0
-    rec_index = 0
 
     # while user did not like recommendation or property suggestion do not shrink graph again
+    # or if sub graph is empty there are no entries or there are no movies, recommendation fails
     while resp == "no" or resp == "watched":
         # choose action and ask if user liked it
         ask = randint(0, 10) % 2
 
-        # if sub graph is empty there are no entries or there are no movies, recommendation fails
-        if len(sub_graph) == 0 or len(top_m) == 0 or len(top_p) == 0:
-            end_conversation = True
-            break
-
         # if ask == 0 suggest new property
         if ask == 0:
             # show most relevant property
-            p_chosen = str(top_p.iloc[prop_index]['prop'])
-            o_chosen = str(top_p.iloc[prop_index]['obj'])
+            p_chosen = str(top_p.iloc[0]['prop'])
+            o_chosen = str(top_p.iloc[0]['obj'])
             print("Do you like or not the " + p_chosen + " " + o_chosen + "? (yes/no)")
 
-            # if did not like prop try next one
-            prop_index = prop_index + 1
+            # hear answer
             resp = str(input())
+
+            if resp == "no":
+                movies_with_prop = sub_graph.loc[(sub_graph['prop'] == p_chosen) & (sub_graph['obj'] == o_chosen)].index
+                top_m = top_m.drop(movies_with_prop)
+                top_p = top_p.drop(movies_with_prop)
+                sub_graph = sub_graph.drop(movies_with_prop)
 
         # if ask != 0 recommend movie
         else:
             print("Based on your current preferences, this movie may be suited for you: ")
 
-            # get movie not seen by user
-            w = False
-            while (not w) and (rec_index < len(top_m.index)):
-                if top_m.index[rec_index] in watched:
-                    rec_index = rec_index + 1
-                else:
-                    w = True
-
             # case if all movies with properties were recommended but no movies were accepted by user
-            if rec_index == len(top_m.index):
+            if len(top_m.index) == 0:
                 print("You have already watched all the movies with the properties you liked :(")
                 end_conversation = True
                 break
 
             # show recommendation
-            print(prop_df.loc[top_m.index[rec_index]]['title'].unique()[0])
+            print(prop_df.loc[top_m.index[0]]['title'].unique()[0])
             print("Did you like the recommendation, didn't like the recommendation or have you "
                   "already watched the movie? (yes/no/watched)")
 
@@ -214,8 +204,17 @@ while not end_conversation:
 
             # if liked the recommendation end conversation
             if resp == "yes":
-                print("Have a good time watching the movie " + prop_df.loc[top_m.index[rec_index]]['title'].unique()[0] +
+                print("Have a good time watching the movie " + prop_df.loc[top_m.index[0]]['title'].unique()[0] +
                       ". Please come again!")
                 end_conversation = True
             else:
-                watched.append(top_m.index[rec_index])
+                m_id = top_m.index[0]
+                top_m = top_m.drop(m_id)
+                top_p = top_p.drop(m_id)
+                sub_graph = sub_graph.drop(m_id)
+
+        if len(sub_graph) == 0 or len(top_m) == 0 or len(top_p) == 0:
+            print("There are no movies that corresponds to your preferences on our database "
+                  "or you already watched them all")
+            end_conversation = True
+            break
