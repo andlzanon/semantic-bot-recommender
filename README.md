@@ -7,7 +7,7 @@ A partir de uma propriedade (ator, tema, produtora, diretor, etc.) e valor (aç�
 
 Em seguida o sistema ordena essas outras propriedades dos filmes que com a característica  incialmente explicitada pelo usuário e vai perguntando por propriedades ou recomendações mais relevântes até que chegue a uma recomendação ou falhe por falta de opções.
 
-## Detalhamento daa Proposta:
+## Detalhamento da Proposta:
 1. Incialmente o usuário escolhe de maneira explícita uma aresta e um valor importante para ele em um filme, 
 2. Em seguida o algoritmo busca um subgrafo com todos os filmes e respectivas propriedades para limitar o espaço de busca
 3. O algoritmo escolhe uma ação, dentre duas, que são: recomendar um filme ou perguntar se uma outra propriedade é relvante para o usuário para buscar um novo subgrafo, baseado no subgrafo anterior
@@ -19,10 +19,10 @@ Em seguida o sistema ordena essas outras propriedades dos filmes que com a carac
 
 ## Reprodução:
 
-- Importar dataset deste [repositório](https://github.com/LuanSSouza/word-recommender-api/blob/master/dataset.rar);
-- Extrair dataset na raiz do projeto com nome da pasta dataset;
-- Executar main.py do projeto [WikidataIntegration](https://github.com/andlzanon/semantic-bot-recommender/tree/main/WikidataIntegration) para gerar o arquivo [wikidata_integration_small.csv](https://github.com/andlzanon/semantic-bot-recommender/blob/main/WikidataIntegration/wikidata_integration_small.csv) 
-- Executar main.py do projeto [SemanticBot](https://github.com/andlzanon/semantic-bot-recommender/tree/main/SemanticBot) para iniciar conversa
+1. Importar dataset deste [repositório](https://github.com/LuanSSouza/word-recommender-api/blob/master/dataset.rar);
+2. Extrair dataset na raiz do projeto com nome da pasta dataset;
+3. Executar main.py do projeto [WikidataIntegration](https://github.com/andlzanon/semantic-bot-recommender/tree/main/WikidataIntegration) para gerar o arquivo [wikidata_integration_small.csv](https://github.com/andlzanon/semantic-bot-recommender/blob/main/WikidataIntegration/wikidata_integration_small.csv) 
+4. Executar main.py do projeto [SemanticBot](https://github.com/andlzanon/semantic-bot-recommender/tree/main/SemanticBot) para iniciar conversa
 
 ## Créditos de bibliotecas:
 Para instalar utilizar comando: 
