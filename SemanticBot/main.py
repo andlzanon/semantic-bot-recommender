@@ -93,6 +93,9 @@ def order_props(sub_graph: pd.DataFrame,  full_graph: pd.DataFrame):
     """
     ordered_properties = sub_graph.loc[(sub_graph['prop'] != 'director') & (sub_graph['obj'] != 'Woody Allen')][['prop', 'obj']]
     ordered_properties = ordered_properties.drop_duplicates()
+    ordered_properties['entropy'] = np.nan
+    ordered_properties['tf_idf'] = np.nan
+    ordered_properties['value'] = np.nan
 
     entrs = calculate_entropy(sub_graph)
     for index, row in ordered_properties.iterrows():

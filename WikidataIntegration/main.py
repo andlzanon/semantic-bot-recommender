@@ -43,7 +43,7 @@ def get_movie_data_from_wikidata(slice_movie_set: pd.DataFrame):
         }
         ORDER BY ?imdbId"""
 
-    user_agent = "WikidatabotIntegration/1.0 https://www.wikidata.org/wiki/User:Andrelzan) " \
+    user_agent = "WikidatabotIntegration/1.0 intermidia) " \
                  "wiki-bot-integration/1.0"
 
     sparql = SPARQLWrapper(endpoint_url, agent=user_agent)

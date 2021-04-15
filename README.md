@@ -1,6 +1,6 @@
 # Semantic Bot Movie Recommender 
 
-## Descrição do algoritmo:
+## Descrição do Algoritmo:
 Codificação de um algoritmo de recomendação conversacional de filmes utilizando Linked Open Data.
 
 A partir de uma propriedade (ator, tema, produtora, diretor, etc.) e valor (ação, Woody Allen, Scarlett Johansson, etc.) incialmente declarados pelo usuário, o algoritmo busca um subgrafo na Wikidata (https://www.wikidata.org/) de todos os filmes e propriedades deste que contém as preferências inicialmente declaradas pelo usuário.
@@ -8,23 +8,23 @@ A partir de uma propriedade (ator, tema, produtora, diretor, etc.) e valor (aç�
 Em seguida o sistema ordena essas outras propriedades dos filmes que com a característica  incialmente explicitada pelo usuário e vai perguntando por propriedades ou recomendações mais relevantes até que chegue a uma recomendação ou falhe por falta de opções.
 
 ## Detalhamento da Proposta:
-1. Incialmente o usuário escolhe de maneira explícita uma aresta e um valor importante para ele em um filme, 
+1. Incialmente o usuário escolhe de maneira explícita uma aresta e um valor importante para ele em um filme
 2. Em seguida o algoritmo busca um subgrafo com todos os filmes e respectivas propriedades para limitar o espaço de busca
 3. O algoritmo escolhe uma ação, dentre duas, que são: recomendar um filme ou perguntar se uma outra propriedade é relevante para o usuário para buscar um novo subgrafo, baseado no subgrafo anterior
     - Para a escolha de ação, atualmente o sistema considera aleatoriamente um número, se for par realiza uma pergunta por propriedade e caso o contrário recomenda um filme
     - Para escolher a propriedade mais relvante é importante destacar que a propriedade é uma aresta e uma entidade no grafo, como, por exemplo, Morgan Freeman como ator. Assim, é realizada uma multiplicação entre a entropia da propriedade, considerando a probabilidade de ocorrer cada valor da propriedade, multiplicado pelo TF-IDF do valor considerando o subgrafo e o grafo completo
     - Para a escolha do filme, atualmente é escolhido o mais popular dentre aqueles que possuem as propriedades de preferencia do usuário
 
-4. O algoritmo executa até que uma recomendação seja aceita pelo usuário ou não encontre mais soluções.
+4. O algoritmo executa até que uma recomendação seja aceita pelo usuário ou não encontre mais soluções
 
 ## Reprodução:
 
-1. Importar dataset deste [repositório](https://github.com/LuanSSouza/word-recommender-api/blob/master/dataset.rar);
-2. Extrair dataset na raiz do projeto com nome da pasta dataset;
-3. Executar main.py do projeto [WikidataIntegration](https://github.com/andlzanon/semantic-bot-recommender/tree/main/WikidataIntegration) para gerar o arquivo [wikidata_integration_small.csv](https://github.com/andlzanon/semantic-bot-recommender/blob/main/WikidataIntegration/wikidata_integration_small.csv) 
+1. Importar dataset deste [repositório](https://github.com/LuanSSouza/word-recommender-api/blob/master/dataset.rar)
+2. Extrair dataset na raiz do projeto com nome da pasta dataset
+3. Executar main.py do projeto [WikidataIntegration](https://github.com/andlzanon/semantic-bot-recommender/tree/main/WikidataIntegration) para gerar o arquivo [wikidata_integration_small.csv](https://github.com/andlzanon/semantic-bot-recommender/blob/main/WikidataIntegration/wikidata_integration_small.csv)
 4. Executar main.py do projeto [SemanticBot](https://github.com/andlzanon/semantic-bot-recommender/tree/main/SemanticBot) para iniciar conversa
 
-## Créditos de bibliotecas:
+## Créditos de Bibliotecas:
 Para instalar utilizar comando: 
     
     pip install <lib>==<version>
@@ -59,7 +59,7 @@ Para instalar utilizar comando:
     }
     ORDER BY ?imdbId
 
-## Exemplo de conversa
+## Exemplo de Conversa
 
     Hello, I'm here to help you choose a movie. We have these characteristics: 
 
