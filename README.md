@@ -5,14 +5,14 @@ Codificação de um algoritmo de recomendação conversacional de filmes utiliza
 
 A partir de uma propriedade (ator, tema, produtora, diretor, etc.) e valor (ação, Woody Allen, Scarlett Johansson, etc.) incialmente declarados pelo usuário, o algoritmo busca um subgrafo na Wikidata (https://www.wikidata.org/) de todos os filmes e propriedades deste que contém as preferências inicialmente declaradas pelo usuário.
 
-Em seguida o sistema ordena essas outras propriedades dos filmes que com a característica  incialmente explicitada pelo usuário e vai perguntando por propriedades ou recomendações mais relevântes até que chegue a uma recomendação ou falhe por falta de opções.
+Em seguida o sistema ordena essas outras propriedades dos filmes que com a característica  incialmente explicitada pelo usuário e vai perguntando por propriedades ou recomendações mais relevantes até que chegue a uma recomendação ou falhe por falta de opções.
 
 ## Detalhamento da Proposta:
 1. Incialmente o usuário escolhe de maneira explícita uma aresta e um valor importante para ele em um filme, 
 2. Em seguida o algoritmo busca um subgrafo com todos os filmes e respectivas propriedades para limitar o espaço de busca
-3. O algoritmo escolhe uma ação, dentre duas, que são: recomendar um filme ou perguntar se uma outra propriedade é relvante para o usuário para buscar um novo subgrafo, baseado no subgrafo anterior
+3. O algoritmo escolhe uma ação, dentre duas, que são: recomendar um filme ou perguntar se uma outra propriedade é relevante para o usuário para buscar um novo subgrafo, baseado no subgrafo anterior
     - Para a escolha de ação, atualmente o sistema considera aleatoriamente um número, se for par realiza uma pergunta por propriedade e caso o contrário recomenda um filme
-    - Para escolher a propriedade mais relvante é importante destacar que a propriedade é uma aresta e uma entidade no grafo, como, por exemplo, Morgan Freeman como ator. Assim, é realizada uma multiplicação entre a entropia da propriedade, considerando a probabilidade de ocorrer cada valor de entidade da propriedade, multiplicado pelo TF-IDF do valor considerando o subgrafo e o grafo completo
+    - Para escolher a propriedade mais relvante é importante destacar que a propriedade é uma aresta e uma entidade no grafo, como, por exemplo, Morgan Freeman como ator. Assim, é realizada uma multiplicação entre a entropia da propriedade, considerando a probabilidade de ocorrer cada valor da propriedade, multiplicado pelo TF-IDF do valor considerando o subgrafo e o grafo completo
     - Para a escolha do filme, atualmente é escolhido o mais popular dentre aqueles que possuem as propriedades de preferencia do usuário
 
 4. O algoritmo executa até que uma recomendação seja aceita pelo usuário ou não encontre mais soluções.
