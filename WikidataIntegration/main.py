@@ -84,7 +84,7 @@ def results_to_dict(slice_movie_set: pd.DataFrame, props_movie: dict):
 
 # read movies set dataset, remove moives with nan imdbLink, set index to movie id and sort by the
 # full imdbid that matches with the wikidata format "ttXXXXXXX"
-movies_set = pd.read_csv("../../Base_Arpit/Base de Dados HetRec Arpit/Items - hetrec_after_2000.dat", "\t",
+movies_set = pd.read_csv("../dataset/Items - hetrec_after_2000.dat", "\t",
                          header=None)
 s_all_movies = len(movies_set)
 movies_set.columns = ['movie_id', 'imdbId', 'title', 'year', 'imdbLink']

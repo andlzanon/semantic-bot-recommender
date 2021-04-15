@@ -128,7 +128,7 @@ def order_props_and_movies(sub_graph: pd.DataFrame, full_graph: pd.DataFrame, ra
 prop_df = pd.read_csv("../WikidataIntegration/wikidata_integration_small.csv")
 prop_df = prop_df.set_index('movie_id')
 
-ratings = pd.read_csv("../Base de Dados HetRec Arpit/1851_movies_ratings.txt", sep='\t', header=None)
+ratings = pd.read_csv("../dataset/1851_movies_ratings.txt", sep='\t', header=None)
 ratings.columns = ['user_id', 'movie_id', 'rating']
 
 # copy original property graph to shrink it
