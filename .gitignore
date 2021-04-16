@@ -2,3 +2,4 @@
 /dataset
 /generated_files
 __pycache__/
+.venv/
