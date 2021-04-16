@@ -91,10 +91,10 @@ def order_props(sub_graph: pd.DataFrame,  full_graph: pd.DataFrame):
     :param full_graph: full graph with all movies properties from wikidata
     :return: ordered properties on a DataFrame
     """
-    ordered_properties = sub_graph.loc[(sub_graph['prop'] != 'director') & (sub_graph['obj'] != 'Woody Allen')][['prop', 'obj']]
-    ordered_properties['entropy'] = np.nan
-    ordered_properties['tf_idf'] = np.nan
-    ordered_properties['value'] = np.nan
+    ordered_properties = sub_graph[['prop', 'obj']]
+    ordered_properties = ordered_properties.assign(entropy=[np.nan for i in range(0, len(ordered_properties))])
+    ordered_properties = ordered_properties.assign(tf_idf=[np.nan for i in range(0, len(ordered_properties))])
+    ordered_properties = ordered_properties.assign(value=[np.nan for i in range(0, len(ordered_properties))])
 
     entrs = calculate_entropy(sub_graph)
     for index, row in ordered_properties.iterrows():
@@ -147,11 +147,12 @@ end_conversation = False
 # ask user for fav prop and value and then shrink graph
 p_chosen = str(input())
 print("These are the favorites along the characteristic:")
-print(*prop_most_pop(sub_graph, p_chosen),sep="\n", end="\n\n")
+print(*prop_most_pop(sub_graph, p_chosen), sep="\n", end="\n\n")
 print("Which one are you looking for in one of these?")
 o_chosen = str(input())
 
 watched = []
+prefered_prop = []
 seed(42)
 # start the loop until the recommendation is accepted or there are no movies based on users' filters
 while not end_conversation:
@@ -171,12 +172,19 @@ while not end_conversation:
         # if ask == 0 suggest new property
         if ask == 0:
             # show most relevant property
-            p_chosen = str(top_p.iloc[0]['prop'])
-            o_chosen = str(top_p.iloc[0]['obj'])
-            print("Do you like or not the " + p_chosen + " " + o_chosen + "? (yes/no)")
+            print("Which of these properties do you like the most? Type the number of the preferred attribute or "
+                  "answer \"no\" if you like none")
+            dif_properties = top_p.drop_duplicates()[:5]
+            for i in range(0, 5):
+                p_topn = str(dif_properties.iloc[i]['prop'])
+                o_topn = str(dif_properties.iloc[i]['obj'])
+                print(str(i+1) + "- " + o_topn + " as " + p_topn)
 
             # hear answer
-            resp = str(input())
+            resp = int(input())
+            p_chosen = str(dif_properties.iloc[resp - 1]['prop'])
+            o_chosen = str(dif_properties.iloc[resp - 1]['obj'])
+            prefered_prop.append((p_chosen, o_chosen))
 
             if resp == "no":
                 movies_with_prop = sub_graph.loc[(sub_graph['prop'] == p_chosen) & (sub_graph['obj'] == o_chosen)].index
@@ -186,8 +194,6 @@ while not end_conversation:
 
         # if ask != 0 recommend movie
         else:
-            print("Based on your current preferences, this movie may be suited for you: ")
-
             # case if all movies with properties were recommended but no movies were accepted by user
             if len(top_m.index) == 0:
                 print("You have already watched all the movies with the properties you liked :(")
@@ -195,7 +201,12 @@ while not end_conversation:
                 break
 
             # show recommendation
-            print(prop_df.loc[top_m.index[0]]['title'].unique()[0])
+            print("Based on your current preferences, this movie may be suited for you: ")
+            print("\"" + prop_df.loc[top_m.index[0]]['title'].unique()[0] + "\"")
+            print("Because it has theses properties that are relevant to you: ")
+            for i in range(0, len(prefered_prop)):
+                t = prefered_prop[i]
+                print(str(i+1) + ": " + str(t[1]) + " as " + str(t[0]))
             print("Did you like the recommendation, didn't like the recommendation or have you "
                   "already watched the movie? (yes/no/watched)")
 
