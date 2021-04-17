@@ -5,23 +5,6 @@ from random import seed
 from random import randint
 
 
-def tf_idf(sub_graph: pd.DataFrame, full_graph: pd.DataFrame, prop: str, obj: str):
-    """
-    Function that returns the tf-idf of property and value tuple
-    :param full_graph: full graph with all movies properties from wikidata
-    :param prop: property to value tf-idf
-    :param obj: value to value tf-idf
-    :return: float tf-idf of the property (e.g. Woody Allen as a director)
-    """
-    tf = len(sub_graph.loc[(sub_graph['prop'] == prop) & (sub_graph['obj'] == obj)])
-    n = len(full_graph.index.unique())
-    idf = np.log((n/tf))
-
-    tfidf = tf * idf
-
-    return tfidf
-
-
 def prop_most_pop(sub_graph: pd.DataFrame, prop: str):
     """
     Function that returns the most popular values for property prop
@@ -44,7 +27,7 @@ def calculate_entropy(sub_graph: pd.DataFrame):
         denom = len(sub_graph[(sub_graph['prop'] == prop)]['obj'])
         prob = []
         for value in values:
-            num = len(sub_graph.loc[(sub_graph['prop'] == prop) & (sub_graph['obj'] == value)])
+            num = len(sub_graph[(sub_graph['prop'] == prop) & (sub_graph['obj'] == value)])
             prob.append(num/denom)
 
         entropies[prop] = entropy(prob, base=2)
@@ -60,12 +43,12 @@ def shrink_graph(sub_graph: pd.DataFrame, prop: str, obj: str):
     :param obj: value of property the user is looking for
     :return: shirked graph of the one passed as parameter
     """
-    shrinked = sub_graph.loc[(sub_graph['prop'] == prop) & (sub_graph['obj'] == obj)]
+    shrinked = sub_graph[(sub_graph['prop'] == prop) & (sub_graph['obj'] == obj)]
 
     for movie_id in shrinked.index.unique():
         shrinked = pd.concat([shrinked, sub_graph.loc[movie_id]])
 
-    shrinked = shrinked.loc[(shrinked['prop'] != prop) & (shrinked['obj'] != obj)]
+    shrinked = shrinked[(shrinked['prop'] != prop) & (shrinked['obj'] != obj)]
     return shrinked.sort_index()
 
 
@@ -78,7 +61,7 @@ def order_movies(sub_graph: pd.DataFrame, ratings: pd.DataFrame):
     """
     ordered_movies = pd.DataFrame(index=sub_graph.index.unique(), columns=['value'])
     for m in sub_graph.index.unique():
-        ordered_movies.loc[m] = len(ratings[(ratings['movie_id'] == m)])
+        ordered_movies.at[m] = len(ratings[(ratings['movie_id'] == m)])
 
     return ordered_movies.sort_values(by=['value'], ascending=False)
 
@@ -92,21 +75,16 @@ def order_props(sub_graph: pd.DataFrame,  full_graph: pd.DataFrame):
     :return: ordered properties on a DataFrame
     """
     ordered_properties = sub_graph[['prop', 'obj']]
-    ordered_properties = ordered_properties.assign(entropy=[np.nan for i in range(0, len(ordered_properties))])
-    ordered_properties = ordered_properties.assign(tf_idf=[np.nan for i in range(0, len(ordered_properties))])
     ordered_properties = ordered_properties.assign(value=[np.nan for i in range(0, len(ordered_properties))])
+    n = len(sub_graph)
 
     entrs = calculate_entropy(sub_graph)
     for index, row in ordered_properties.iterrows():
         prop = row[0]
         obj = row[1]
         h = entrs[prop]
-        rel = tf_idf(sub_graph, full_graph, prop, obj)
-        ordered_properties.loc[(ordered_properties.index == index) & (ordered_properties['prop'] == prop) &
-                               (ordered_properties['obj'] == obj), 'entropy'] = h
-        ordered_properties.loc[(ordered_properties.index == index) & (ordered_properties['prop'] == prop) &
-                               (ordered_properties['obj'] == obj), 'tf_idf'] = rel
-        ordered_properties.loc[(ordered_properties.index == index) & (ordered_properties['prop'] == prop) &
+        rel = len(sub_graph[(sub_graph['prop'] == prop) & (sub_graph['obj'] == obj)]) / n
+        ordered_properties.at[(ordered_properties.index == index) & (ordered_properties['prop'] == prop) &
                                (ordered_properties['obj'] == obj), 'value'] = rel * h
 
     return ordered_properties.sort_values(by=['value'], ascending=False)
