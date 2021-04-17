@@ -22,12 +22,12 @@ def calculate_entropy(sub_graph: pd.DataFrame):
     :return: entropies of properties on dictionary
     """
     entropies = {}
-    for prop in sub_graph['prop'].unique():
-        values = sub_graph[(sub_graph['prop'] == prop)]['obj'].unique()
-        denom = len(sub_graph[(sub_graph['prop'] == prop)]['obj'])
+    for prop in sub_graph['prop'].value_counts().index:
+        o_values = prop_df[(prop_df['prop'] == prop)]['obj'].value_counts()
+        denom = sum(o_values.values)
         prob = []
-        for value in values:
-            num = len(sub_graph[(sub_graph['prop'] == prop) & (sub_graph['obj'] == value)])
+        for value in o_values.index:
+            num = o_values[value]
             prob.append(num/denom)
 
         entropies[prop] = entropy(prob, base=2)
@@ -66,31 +66,33 @@ def order_movies(sub_graph: pd.DataFrame, ratings: pd.DataFrame):
     return ordered_movies.sort_values(by=['value'], ascending=False)
 
 
-def order_props(sub_graph: pd.DataFrame,  full_graph: pd.DataFrame):
+def order_props(sub_graph: pd.DataFrame):
     """
     Function that order the properties based on the entropy of the property and the relevance of the value
-    measured by the tf-idf metric
+    measured by the tf metric
     :param sub_graph: sub graph that represents the current graph that matches the users preferences
-    :param full_graph: full graph with all movies properties from wikidata
     :return: ordered properties on a DataFrame
     """
-    ordered_properties = sub_graph[['prop', 'obj']]
-    ordered_properties = ordered_properties.assign(value=[np.nan for i in range(0, len(ordered_properties))])
-    n = len(sub_graph)
 
+    # make slice of subgraph of just property and obj
+    slice = sub_graph[['prop', 'obj']]
+    n = len(sub_graph)
+    ordered_properties = slice.copy()
+
+    # create column of tf
+    ordered_properties['tf'] = slice.groupby('obj').transform('count')
+
+    # calculate entropy and create entropy column
     entrs = calculate_entropy(sub_graph)
-    for index, row in ordered_properties.iterrows():
-        prop = row[0]
-        obj = row[1]
-        h = entrs[prop]
-        rel = len(sub_graph[(sub_graph['prop'] == prop) & (sub_graph['obj'] == obj)]) / n
-        ordered_properties.at[(ordered_properties.index == index) & (ordered_properties['prop'] == prop) &
-                               (ordered_properties['obj'] == obj), 'value'] = rel * h
+    ordered_properties['entropy'] = ordered_properties.apply(lambda x: entrs[x['prop']], axis=1)
+
+    # multiply the two created columns for the value score and return sorted
+    ordered_properties['value'] = ordered_properties['tf'] * ordered_properties['entropy']
 
     return ordered_properties.sort_values(by=['value'], ascending=False)
 
 
-def order_props_and_movies(sub_graph: pd.DataFrame, full_graph: pd.DataFrame, ratings: pd.DataFrame):
+def order_props_and_movies(sub_graph: pd.DataFrame, ratings: pd.DataFrame):
     """
     Function that orders properties and movies based on user choices
     :param sub_graph: sub graph that represents the current graph that matches the users preferences
@@ -99,7 +101,7 @@ def order_props_and_movies(sub_graph: pd.DataFrame, full_graph: pd.DataFrame, ra
     :return: the ordered movies and properties DataFrames
     """
     ordered_movies = order_movies(sub_graph, ratings)
-    ordered_props = order_props(sub_graph, full_graph)
+    ordered_props = order_props(sub_graph)
 
     return ordered_movies, ordered_props
 
@@ -124,7 +126,7 @@ end_conversation = False
 
 # ask user for fav prop and value and then shrink graph
 p_chosen = str(input())
-print("These are the favorites along the characteristic:")
+print("\nThese are the favorites along the characteristic:")
 print(*prop_most_pop(sub_graph, p_chosen), sep="\n", end="\n\n")
 print("Which one are you looking for in one of these?")
 o_chosen = str(input())
@@ -137,7 +139,7 @@ while not end_conversation:
 
     # get subgraph based on property chosen and order properties
     sub_graph = shrink_graph(sub_graph, p_chosen, o_chosen)
-    top_m, top_p = order_props_and_movies(sub_graph, prop_df, ratings)
+    top_m, top_p = order_props_and_movies(sub_graph, ratings)
 
     resp = "no"
 
@@ -150,7 +152,7 @@ while not end_conversation:
         # if ask == 0 suggest new property
         if ask == 0:
             # show most relevant property
-            print("Which of these properties do you like the most? Type the number of the preferred attribute or "
+            print("\nWhich of these properties do you like the most? Type the number of the preferred attribute or "
                   "answer \"no\" if you like none")
             dif_properties = top_p.drop_duplicates()[:5]
             for i in range(0, 5):
@@ -174,14 +176,14 @@ while not end_conversation:
         else:
             # case if all movies with properties were recommended but no movies were accepted by user
             if len(top_m.index) == 0:
-                print("You have already watched all the movies with the properties you liked :(")
+                print("\nYou have already watched all the movies with the properties you liked :(")
                 end_conversation = True
                 break
 
             # show recommendation
-            print("Based on your current preferences, this movie may be suited for you: ")
+            print("\nBased on your current preferences, this movie may be suited for you: ")
             print("\"" + prop_df.loc[top_m.index[0]]['title'].unique()[0] + "\"")
-            print("Because it has theses properties that are relevant to you: ")
+            print("Because it has these properties that are relevant to you: ")
             for i in range(0, len(prefered_prop)):
                 t = prefered_prop[i]
                 print(str(i+1) + ": " + str(t[1]) + " as " + str(t[0]))
@@ -193,8 +195,8 @@ while not end_conversation:
 
             # if liked the recommendation end conversation
             if resp == "yes":
-                print("Have a good time watching the movie " + prop_df.loc[top_m.index[0]]['title'].unique()[0] +
-                      ". Please come again!")
+                print("\nHave a good time watching the movie \"" + prop_df.loc[top_m.index[0]]['title'].unique()[0] +
+                      "\". Please come again!")
                 end_conversation = True
             else:
                 m_id = top_m.index[0]
@@ -203,7 +205,7 @@ while not end_conversation:
                 sub_graph = sub_graph.drop(m_id)
 
         if len(sub_graph) == 0 or len(top_m) == 0 or len(top_p) == 0:
-            print("There are no movies that corresponds to your preferences on our database "
+            print("\nThere are no movies that corresponds to your preferences on our database "
                   "or you already watched them all")
             end_conversation = True
             break
