@@ -27,7 +27,7 @@ Em seguida o sistema ordena essas outras propriedades dos filmes que com a carac
 ## Créditos de Bibliotecas:
 Para instalar utilizar comando: 
     
-    pip install <lib>==<version>
+    pip install requirements
 
 * [numpy 1.19.1](https://numpy.org/)
 * [pandas 1.0.4](https://pandas.pydata.org/)
@@ -83,6 +83,7 @@ Para instalar utilizar comando:
 
     From which one are you interested in exploring today?
     main subject
+
     These are the favorites along the characteristic:
     revenge
     terrorism
@@ -97,18 +98,45 @@ Para instalar utilizar comando:
 
     Which one are you looking for in one of these?
     World War II
-    Do you like or the genre drama? (yes/no)
-    yes
+
+    Which of these properties do you like the most? Type the number of the preferred attribute or answer "no" if you like none
+    1- drama as genre
+    2- war film as genre
+    3- Alexandre Desplat as cast member
+    4- National Board of Review: Top Ten Films as award received
+    5- Liev Schreiber as cast member
+    1
+
     Based on your current preferences, this movie may be suited for you: 
-    The Pianist
+    "The Pianist"
+    Because it has these properties that are relevant to you: 
+    1: drama as genre
     Did you like the recommendation, didn't like the recommendation or have you already watched the movie? (yes/no/watched)
     no
-    Do you like or the award received National Board of Review: Top Ten Films? (yes/no)
-    yes
-    Do you like or the cast member Brad Pitt? (yes/no)
-    yes
+
+    Which of these properties do you like the most? Type the number of the preferred attribute or answer "no" if you like none
+    1- Alexandre Desplat as cast member
+    2- National Board of Review: Top Ten Films as award received
+    3- Quentin Tarantino as cast member
+    4- Academy Award for Best Writing, Adapted Screenplay as award received
+    5- Academy Award for Best Writing, Adapted Screenplay as nominated for
+    3
+
+    Which of these properties do you like the most? Type the number of the preferred attribute or answer "no" if you like none
+    1- Academy Award for Best Supporting Actor as award received
+    2- Academy Award for Best Supporting Actor as nominated for
+    3- Lawrence Bender as producer
+    4- Sally Menke as film editor
+    5- Robert Richardson as director of photography
+    1
+
     Based on your current preferences, this movie may be suited for you: 
-    The Curious Case of Benjamin Button
+    "Inglourious Basterds"
+    Because it has these properties that are relevant to you: 
+    1: drama as genre
+    2: Quentin Tarantino as cast member
+    3: Academy Award for Best Supporting Actor as award received
     Did you like the recommendation, didn't like the recommendation or have you already watched the movie? (yes/no/watched)
     yes
-    Have a good time watching the movie The Curious Case of Benjamin Button. Please come again!
+
+    Have a good time watching the movie "Inglourious Basterds". Please come again!
