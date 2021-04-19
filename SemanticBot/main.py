@@ -206,7 +206,7 @@ while not end_conversation:
             for i in range(0, len(dif_properties)):
                 p_topn = str(dif_properties.iloc[i]['prop'])
                 o_topn = str(dif_properties.iloc[i]['obj'])
-                print(str(i + 1) + "- " + o_topn + " as " + p_topn)
+                print(str(i + 1) + ") " + p_topn + " - " + o_topn)
 
             # hear answer
             resp = input()
@@ -239,7 +239,7 @@ while not end_conversation:
             print("Because it has these properties that are relevant to you: ")
             for i in range(0, len(prefered_prop)):
                 t = prefered_prop[i]
-                print(str(i + 1) + ": " + str(t[1]) + " as " + str(t[0]))
+                print(str(i + 1) + ") " + str(t[0]) + " - " + str(t[1]))
             print("Did you like the recommendation, didn't like the recommendation or have you "
                   "already watched the movie? (yes/no/watched)")
 
