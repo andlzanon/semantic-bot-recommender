@@ -3,6 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="06ede25f-654b-4076-b996-01443041333a" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/../SemanticBot/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../SemanticBot/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../SemanticBot/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/../SemanticBot/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

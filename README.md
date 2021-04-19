@@ -100,42 +100,42 @@ Para instalar utilizar comando:
     World War II
 
     Which of these properties do you like the most? Type the number of the preferred attribute or answer "no" if you like none
-    1- drama as genre
-    2- war film as genre
-    3- Alexandre Desplat as cast member
-    4- National Board of Review: Top Ten Films as award received
-    5- Liev Schreiber as cast member
-    1
+    1) cast member - Samuel L. Jackson
+    2) cast member - Brad Pitt
+    3) cast member - Thomas Kretschmann
+    4) cast member - Stanley Tucci
+    5) screenwriter - Ronald Harwood
+    2
 
     Based on your current preferences, this movie may be suited for you: 
-    "The Pianist"
+    "The Curious Case of Benjamin Button"
     Because it has these properties that are relevant to you: 
-    1: drama as genre
+    1) cast member - Brad Pitt
     Did you like the recommendation, didn't like the recommendation or have you already watched the movie? (yes/no/watched)
     no
 
     Which of these properties do you like the most? Type the number of the preferred attribute or answer "no" if you like none
-    1- Alexandre Desplat as cast member
-    2- National Board of Review: Top Ten Films as award received
-    3- Quentin Tarantino as cast member
-    4- Academy Award for Best Writing, Adapted Screenplay as award received
-    5- Academy Award for Best Writing, Adapted Screenplay as nominated for
-    3
+    1) nominated for - Academy Award for Best Picture
+    2) genre - drama
+    3) nominated for - Academy Award for Best Sound Mixing
+    4) nominated for - Academy Award for Best Director
+    5) nominated for - Academy Award for Best Film Editing
+    1
 
     Which of these properties do you like the most? Type the number of the preferred attribute or answer "no" if you like none
-    1- Academy Award for Best Supporting Actor as award received
-    2- Academy Award for Best Supporting Actor as nominated for
-    3- Lawrence Bender as producer
-    4- Sally Menke as film editor
-    5- Robert Richardson as director of photography
+    1) genre - drama
+    2) production company - Universal Pictures
+    3) award received - National Board of Review: Top Ten Films
+    4) production company - The Weinstein Company
+    5) director - Quentin Tarantino
     1
 
     Based on your current preferences, this movie may be suited for you: 
     "Inglourious Basterds"
     Because it has these properties that are relevant to you: 
-    1: drama as genre
-    2: Quentin Tarantino as cast member
-    3: Academy Award for Best Supporting Actor as award received
+    1) cast member - Brad Pitt
+    2) nominated for - Academy Award for Best Picture
+    3) genre - drama
     Did you like the recommendation, didn't like the recommendation or have you already watched the movie? (yes/no/watched)
     yes
 
