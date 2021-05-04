@@ -3,8 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="06ede25f-654b-4076-b996-01443041333a" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/../SemanticBot/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../SemanticBot/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SemanticBot/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/../SemanticBot/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/wikidata_integration.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,10 +31,10 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../SemanticBot" />
   </component>
-  <component name="RunManager">
-    <configuration name="main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
+  <component name="RunManager" selected="Python.adjacency_matrix">
+    <configuration name="adjacency_matrix" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="WikidataIntegration" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -46,7 +46,7 @@
       <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/adjacency_matrix.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -55,6 +55,31 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="wikidata_integration" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
+      <module name="WikidataIntegration" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="C:\Users\andre\AppData\Local\Programs\Python\Python38-32\python.exe" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="C:\Users\andre\Documents\Projetos_Git\semantic-bot-recommender\WikidataIntegration\wikidata_integration.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Python.adjacency_matrix" />
+      <item itemvalue="Python.wikidata_integration" />
+    </list>
   </component>
   <component name="SvnConfiguration">
     <configuration />
@@ -70,54 +95,54 @@
     <servers />
   </component>
   <component name="WindowStateProjectService">
-    <state x="2334" y="174" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1617373559829">
+    <state x="2334" y="174" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1620075560746">
       <screen x="1920" y="0" width="1920" height="1040" />
     </state>
-    <state x="2334" y="174" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1536.824/1920.0.1920.1040@1920.0.1920.1040" timestamp="1617373559829" />
+    <state x="2334" y="174" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1536.824/1920.0.1920.1040@1920.0.1920.1040" timestamp="1620075560746" />
     <state x="2635" y="222" key="#xdebugger.evaluate" timestamp="1617392326989">
       <screen x="1920" y="0" width="1920" height="1040" />
     </state>
     <state x="2635" y="222" key="#xdebugger.evaluate/0.0.1536.824/1920.0.1920.1040@1920.0.1920.1040" timestamp="1617392326989" />
-    <state x="2660" y="274" key="FileChooserDialogImpl" timestamp="1618578448822">
+    <state x="2660" y="274" key="FileChooserDialogImpl" timestamp="1620163934263">
       <screen x="1920" y="0" width="1920" height="1040" />
     </state>
-    <state x="2660" y="274" key="FileChooserDialogImpl/0.0.1536.824/1920.0.1920.1040@1920.0.1920.1040" timestamp="1618578448822" />
-    <state width="1899" height="305" key="GridCell.Tab.0.bottom" timestamp="1618531443939">
+    <state x="2660" y="274" key="FileChooserDialogImpl/0.0.1536.824/1920.0.1920.1040@1920.0.1920.1040" timestamp="1620163934263" />
+    <state width="1899" height="290" key="GridCell.Tab.0.bottom" timestamp="1620164301639">
       <screen x="1920" y="0" width="1920" height="1040" />
     </state>
-    <state width="1899" height="305" key="GridCell.Tab.0.bottom/0.0.1536.824/1920.0.1920.1040@1920.0.1920.1040" timestamp="1618531443939" />
-    <state width="1899" height="305" key="GridCell.Tab.0.center" timestamp="1618531443938">
+    <state width="1899" height="290" key="GridCell.Tab.0.bottom/0.0.1536.824/1920.0.1920.1040@1920.0.1920.1040" timestamp="1620164301639" />
+    <state width="1899" height="290" key="GridCell.Tab.0.center" timestamp="1620164301639">
       <screen x="1920" y="0" width="1920" height="1040" />
     </state>
-    <state width="1899" height="305" key="GridCell.Tab.0.center/0.0.1536.824/1920.0.1920.1040@1920.0.1920.1040" timestamp="1618531443938" />
-    <state width="1899" height="305" key="GridCell.Tab.0.left" timestamp="1618531443938">
+    <state width="1899" height="290" key="GridCell.Tab.0.center/0.0.1536.824/1920.0.1920.1040@1920.0.1920.1040" timestamp="1620164301639" />
+    <state width="1899" height="290" key="GridCell.Tab.0.left" timestamp="1620164301639">
       <screen x="1920" y="0" width="1920" height="1040" />
     </state>
-    <state width="1899" height="305" key="GridCell.Tab.0.left/0.0.1536.824/1920.0.1920.1040@1920.0.1920.1040" timestamp="1618531443938" />
-    <state width="1899" height="305" key="GridCell.Tab.0.right" timestamp="1618531443938">
+    <state width="1899" height="290" key="GridCell.Tab.0.left/0.0.1536.824/1920.0.1920.1040@1920.0.1920.1040" timestamp="1620164301639" />
+    <state width="1899" height="290" key="GridCell.Tab.0.right" timestamp="1620164301639">
       <screen x="1920" y="0" width="1920" height="1040" />
     </state>
-    <state width="1899" height="305" key="GridCell.Tab.0.right/0.0.1536.824/1920.0.1920.1040@1920.0.1920.1040" timestamp="1618531443938" />
-    <state width="1899" height="348" key="GridCell.Tab.1.bottom" timestamp="1617661863001">
+    <state width="1899" height="290" key="GridCell.Tab.0.right/0.0.1536.824/1920.0.1920.1040@1920.0.1920.1040" timestamp="1620164301639" />
+    <state width="1899" height="348" key="GridCell.Tab.1.bottom" timestamp="1620094017613">
       <screen x="1920" y="0" width="1920" height="1040" />
     </state>
-    <state width="1899" height="348" key="GridCell.Tab.1.bottom/0.0.1536.824/1920.0.1920.1040@1920.0.1920.1040" timestamp="1617661863001" />
-    <state width="1899" height="348" key="GridCell.Tab.1.center" timestamp="1617661863000">
+    <state width="1899" height="348" key="GridCell.Tab.1.bottom/0.0.1536.824/1920.0.1920.1040@1920.0.1920.1040" timestamp="1620094017613" />
+    <state width="1899" height="348" key="GridCell.Tab.1.center" timestamp="1620094017613">
       <screen x="1920" y="0" width="1920" height="1040" />
     </state>
-    <state width="1899" height="348" key="GridCell.Tab.1.center/0.0.1536.824/1920.0.1920.1040@1920.0.1920.1040" timestamp="1617661863000" />
-    <state width="1899" height="348" key="GridCell.Tab.1.left" timestamp="1617661863000">
+    <state width="1899" height="348" key="GridCell.Tab.1.center/0.0.1536.824/1920.0.1920.1040@1920.0.1920.1040" timestamp="1620094017613" />
+    <state width="1899" height="348" key="GridCell.Tab.1.left" timestamp="1620094017613">
       <screen x="1920" y="0" width="1920" height="1040" />
     </state>
-    <state width="1899" height="348" key="GridCell.Tab.1.left/0.0.1536.824/1920.0.1920.1040@1920.0.1920.1040" timestamp="1617661863000" />
-    <state width="1899" height="348" key="GridCell.Tab.1.right" timestamp="1617661863001">
+    <state width="1899" height="348" key="GridCell.Tab.1.left/0.0.1536.824/1920.0.1920.1040@1920.0.1920.1040" timestamp="1620094017613" />
+    <state width="1899" height="348" key="GridCell.Tab.1.right" timestamp="1620094017613">
       <screen x="1920" y="0" width="1920" height="1040" />
     </state>
-    <state width="1899" height="348" key="GridCell.Tab.1.right/0.0.1536.824/1920.0.1920.1040@1920.0.1920.1040" timestamp="1617661863001" />
-    <state width="968" height="528" key="XDebugger.FullValuePopup" timestamp="1617386858155">
+    <state width="1899" height="348" key="GridCell.Tab.1.right/0.0.1536.824/1920.0.1920.1040@1920.0.1920.1040" timestamp="1620094017613" />
+    <state width="968" height="528" key="XDebugger.FullValuePopup" timestamp="1620136165404">
       <screen x="1920" y="0" width="1920" height="1040" />
     </state>
-    <state width="968" height="528" key="XDebugger.FullValuePopup/0.0.1536.824/1920.0.1920.1040@1920.0.1920.1040" timestamp="1617386858155" />
+    <state width="968" height="528" key="XDebugger.FullValuePopup/0.0.1536.824/1920.0.1920.1040@1920.0.1920.1040" timestamp="1620136165404" />
     <state x="2543" y="225" key="search.everywhere.popup" timestamp="1617373066769">
       <screen x="1920" y="0" width="1920" height="1040" />
     </state>
@@ -127,12 +152,12 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/main.py</url>
+          <url>file://$PROJECT_DIR$/wikidata_integration.py</url>
           <line>105</line>
           <option name="timeStamp" value="4" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/main.py</url>
+          <url>file://$PROJECT_DIR$/wikidata_integration.py</url>
           <line>11</line>
           <option name="timeStamp" value="6" />
         </line-breakpoint>
