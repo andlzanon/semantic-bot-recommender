@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import networkx as nx
 from scipy.stats import entropy
 from random import seed
 from random import randint
@@ -52,7 +53,54 @@ def shrink_graph(sub_graph: pd.DataFrame, prop: str, obj: str):
     return shrinked.sort_index()
 
 
-def order_movies(sub_graph: pd.DataFrame, ratings: pd.DataFrame):
+def order_movies_by_pagerank(sub_graph: pd.DataFrame, adj_matrix: pd.DataFrame,  watched: list, weight_vec: list):
+    """
+    Function that order the movies based on its' pagerank on the graph. The adj matrix is created on the
+    WikidataIntegration project, in the adjacency_matrix.py
+    :param sub_graph: sub graph that represents the current graph that matches the users preferences
+    :param adj_matrix: adjacency matrix of the movies
+    :param watched: movies that the user watched
+    :param weight_vec: list with size two and sum equal to one with the weights of the personalization to the watched
+    movies and the rest of the nodes
+    :return: ordered movies on a DataFrame
+    """
+
+    # create movies list, cutout adj matrix to only use these movies and then transform it into numpy array
+    movies = sub_graph.index.unique().to_list() + watched
+    movies.sort()
+    adj_matrix_cutout = adj_matrix.loc[movies][movies]
+    numpy_adj = adj_matrix_cutout.values
+
+    # if user did not watched any movies then personalization is none
+    # else create personalization and assign weights on personalization dict
+    if len(watched) == 0:
+        personalization = None
+    else:
+        personalization = {}
+        value_watched = weight_vec[0] / len(watched)
+        value_all = weight_vec[1] / len(sub_graph.index.unique().to_list())
+
+        for movie in movies:
+            if movie in watched:
+                personalization[movie] = value_watched
+            else:
+                personalization[movie] = value_all
+
+    # create mapping to save movie id and calculate pagerank
+    label_mapping = {idx: val for idx, val in enumerate(movies)}
+    G = nx.from_numpy_matrix(numpy_adj)
+    G = nx.relabel_nodes(G, label_mapping)
+    pr_np = nx.pagerank_scipy(G, personalization=personalization)
+
+    # order movies
+    ordered_movies = pd.DataFrame(index=sub_graph.index.unique(), columns=['value'])
+    for m in sub_graph.index.unique():
+        ordered_movies.at[m] = pr_np[m]
+
+    return ordered_movies.sort_values(by=['value'], ascending=False)
+
+
+def order_movies_by_pop(sub_graph: pd.DataFrame, ratings: pd.DataFrame):
     """
     Function that order the movies based on its' popularity
     :param sub_graph: sub graph that represents the current graph that matches the users preferences
@@ -135,28 +183,17 @@ def generate_global_zscore(full_graph: pd.DataFrame, path: str, flag=False):
     return pd.read_csv(path, usecols=['prop', 'obj', 'count', 'global_zscore']).set_index(['prop', 'obj']).to_dict()
 
 
-def order_props_and_movies(sub_graph: pd.DataFrame, g_zscore: dict, ratings: pd.DataFrame, weight_vec: list):
-    """
-    Function that orders properties and movies based on user choices
-    :param sub_graph: sub graph that represents the current graph that matches the users preferences
-    :param g_zscore: dictionary of zscores for all properties on graph
-    :param ratings: ratings dataset in the format user_id, movie_id, rating
-    :param weight_vec: vector of weigths for the entropy and local and global relevance respectively
-        the size of this list is 3 always
-    :return: the ordered movies and properties DataFrames
-    """
-    ordered_movies = order_movies(sub_graph, ratings)
-    ordered_props = order_props(sub_graph, g_zscore, weight_vec)
-
-    return ordered_movies, ordered_props
-
-
 # import database and import of the ratings
 full_prop_graph = pd.read_csv("../WikidataIntegration/wikidata_integration_small.csv")
 full_prop_graph = full_prop_graph.set_index('movie_id')
 
 ratings = pd.read_csv("../dataset/1851_movies_ratings.txt", sep='\t', header=None)
 ratings.columns = ['user_id', 'movie_id', 'rating']
+
+# read full adj matrix
+adj_matrix = pd.read_csv("../WikidataIntegration/adj_matrix.csv", header=None)
+adj_matrix.index = full_prop_graph.index.unique().sort_values()
+adj_matrix.columns = full_prop_graph.index.unique().sort_values()
 
 # get the global zscore for the movies
 g_zscore = generate_global_zscore(full_prop_graph, path="./global_properties.csv", flag=False)
@@ -180,14 +217,13 @@ print("Which one are you looking for in one of these?")
 o_chosen = str(input())
 
 watched = []
-prefered_prop = []
+prefered_prop = [(p_chosen, o_chosen)]
 seed(42)
 # start the loop until the recommendation is accepted or there are no movies based on users' filters
 while not end_conversation:
 
     # get subgraph based on property chosen and order properties
     sub_graph = shrink_graph(sub_graph, p_chosen, o_chosen)
-    top_m, top_p = order_props_and_movies(sub_graph, g_zscore, ratings, [1/3, 1/3, 1/3])
 
     resp = "no"
 
@@ -200,6 +236,8 @@ while not end_conversation:
         # if ask == 0 suggest new property
         if ask == 0:
             # show most relevant property
+            top_p = order_props(sub_graph, g_zscore, [1/3, 1/3, 1/3])
+
             print("\nWhich of these properties do you like the most? Type the number of the preferred attribute or "
                   "answer \"no\" if you like none")
             dif_properties = top_p.drop_duplicates()[:5]
@@ -221,12 +259,13 @@ while not end_conversation:
                     o = row[1]
                     movies_with_prop = sub_graph.loc[(sub_graph['prop'] == p) & (sub_graph['obj'] == o)].index
                     for m in movies_with_prop:
-                        top_m = top_m.drop(m)
                         top_p = top_p.drop(m)
                         sub_graph = sub_graph.drop(m)
 
         # if ask != 0 recommend movie
         else:
+            top_m = order_movies_by_pagerank(sub_graph, adj_matrix, watched, [0.8, 0.2])
+
             # case if all movies with properties were recommended but no movies were accepted by user
             if len(top_m.index) == 0:
                 print("\nYou have already watched all the movies with the properties you liked :(")
@@ -258,10 +297,9 @@ while not end_conversation:
                 if resp == "watched":
                     watched.append(m_id)
                 top_m = top_m.drop(m_id)
-                top_p = top_p.drop(m_id)
                 sub_graph = sub_graph.drop(m_id)
 
-        if len(sub_graph) == 0 or len(top_m) == 0 or len(top_p) == 0:
+        if len(sub_graph) == 0 or len(sub_graph.index.unique()) == 0:
             print("\nThere are no movies that corresponds to your preferences on our database "
                   "or you already watched them all")
             end_conversation = True
