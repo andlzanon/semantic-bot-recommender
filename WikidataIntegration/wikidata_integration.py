@@ -1,4 +1,5 @@
 import pandas as pd
+import time
 from SPARQLWrapper import SPARQLWrapper, JSON
 
 
@@ -22,7 +23,7 @@ def get_movie_data_from_wikidata(slice_movie_set: pd.DataFrame):
     SELECT DISTINCT
           ?itemLabel
           ?propertyItemLabel
-          ?valueLabel ?imdbId
+          ?valueLabel ?value ?imdbId
         WHERE 
         {
           ?item wdt:P345 ?imdbId .
@@ -73,10 +74,11 @@ def results_to_dict(slice_movie_set: pd.DataFrame, props_movie: dict):
         m_title = line["itemLabel"]["value"]
         m_prop = line["propertyItemLabel"]["value"]
         m_obj = line["valueLabel"]["value"]
+        m_obj_code = line["value"]["value"].split("/")[-1]
         m_imdb = line["imdbId"]["value"]
 
-        dict_props = {"movie_id": slice_movie_set.loc[m_imdb, 'movie_id'], "imdbId": m_imdb, "title": m_title, "prop": m_prop,
-                      "obj": m_obj}
+        dict_props = {"movie_id": slice_movie_set.loc[m_imdb, 'movie_id'], "title": m_title, "prop": m_prop,
+                      "obj": m_obj, "obj_code": m_obj_code,"imdbId": m_imdb,}
         filter_props.append(dict_props)
 
     return filter_props
@@ -94,7 +96,7 @@ movies_set['full_imdbId'] = movies_set['imdbLink'].apply(lambda x: x.split("/")[
 movies_set = movies_set.sort_values(by=['full_imdbId'])
 
 # create output, final dataframe with all properties of movies
-all_movie_props = pd.DataFrame(columns=['movie_id', 'title', 'prop', 'obj'])
+all_movie_props = pd.DataFrame(columns=['movie_id', 'title', 'prop', 'obj', 'obj_code', 'imdbId'])
 
 # obtaind properties of movies in 300 movies batches
 begin = 0

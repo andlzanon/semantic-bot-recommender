@@ -26,42 +26,73 @@ def movie_props_list(movie_id: int, all_movies_props: pd.DataFrame):
     return movie_tuples
 
 
-# read full property graph and set index to movie id
-full_prop_graph = pd.read_csv("../WikidataIntegration/wikidata_integration_small.csv",
-                              usecols=['movie_id', 'prop', 'obj'])
-full_prop_graph = full_prop_graph.set_index('movie_id')
-movies = full_prop_graph.index.unique().sort_values()
+def movie_to_movie_adj_matrix(full_graph: pd.DataFrame):
+    movies = full_graph.index.unique().sort_values()
 
-# create empty dataFrame with  movie id as column and index
-adj_matrix = pd.DataFrame(index=movies, columns=movies)
-adj_matrix = adj_matrix.fillna(0)
+    # create empty dataFrame with  movie id as column and index
+    adj_matrix = pd.DataFrame(index=movies, columns=movies)
+    adj_matrix = adj_matrix.fillna(0)
 
-# for all movies fill the adjacency matrix, with the weight of the edge as the number of equal properties on the graph
-for i in range(0, len(movies)):
-    movie1 = movies[i]
-    movie1_props = movie_props_list(movie1, full_prop_graph)
+    # for all movies fill the adjacency matrix, with the weight of the edge as the number of equal properties on the
+    # graph
+    for i in range(0, len(movies)):
+        movie1 = movies[i]
+        movie1_props = movie_props_list(movie1, full_prop_graph)
 
-    for j in range(i, len(movies)):
-        movie2 = movies[j]
+        for j in range(i, len(movies)):
+            movie2 = movies[j]
 
-        if movie1 != movie2:
-            movie2_props = movie_props_list(movie2, full_prop_graph)
+            if movie1 != movie2:
+                movie2_props = movie_props_list(movie2, full_prop_graph)
 
-            intersection = pd.Series(list(set(movie1_props).intersection(set(movie2_props))), dtype=str)
-            if len(intersection) > 0:
-                n = len(intersection)
-                adj_matrix.at[movie1, movie2] = n
-                adj_matrix.at[movie2, movie1] = n
-                print("movie1: " + str(movie1) + " movie2: " + str(movie2) + " adj: " + str(n))
+                intersection = pd.Series(list(set(movie1_props).intersection(set(movie2_props))), dtype=str)
+                if len(intersection) > 0:
+                    n = len(intersection)
+                    adj_matrix.at[movie1, movie2] = n
+                    adj_matrix.at[movie2, movie1] = n
+                    print("movie1: " + str(movie1) + " movie2: " + str(movie2) + " adj: " + str(n))
+                else:
+                    adj_matrix.at[movie1, movie2] = 0
+                    adj_matrix.at[movie2, movie1] = 0
+                    print("movie1: " + str(movie1) + " movie2: " + str(movie2) + " adj: 0")
+
             else:
                 adj_matrix.at[movie1, movie2] = 0
                 adj_matrix.at[movie2, movie1] = 0
                 print("movie1: " + str(movie1) + " movie2: " + str(movie2) + " adj: 0")
 
-        else:
-            adj_matrix.at[movie1, movie2] = 0
-            adj_matrix.at[movie2, movie1] = 0
-            print("movie1: " + str(movie1) + " movie2: " + str(movie2) + " adj: 0")
+    # save matrix
+    adj_matrix.to_csv("./movie_to_movie_adj_matrix.csv", mode='w', header=False, index=False)
 
-# save matrix
-adj_matrix.to_csv("./adj_matrix.csv", mode='w', header=False, index=False)
+
+def movie_user_prop_adj_matrix(full_graph: pd.DataFrame, movie_rattings: pd.DataFrame):
+    # create empty dataFrame with  movie id as column and index
+    edgelist = pd.DataFrame(columns=['origin', 'destination'])
+
+    movie_rattings['origin'] = 'U' + movie_rattings['user_id'].astype(str)
+    movie_rattings['destination'] = 'M' + movie_rattings['movie_id'].astype(str)
+    edgelist = pd.concat([edgelist, movie_rattings[['origin', 'destination']]])
+
+    copy = full_graph.copy()
+    copy['origin'] = 'M' + copy.index.astype(str)
+    copy['destination'] = copy['obj_code']
+    copy['weight'] = 1
+    edgelist = pd.concat([edgelist, copy[['origin', 'destination']]])
+
+    # save matrix
+    edgelist.to_csv("./movie_user_prop_adj_matrix.csv", mode='w', header=True, index=False)
+
+
+# read full property graph and set index to movie id
+full_prop_graph = pd.read_csv("../WikidataIntegration/wikidata_integration_small.csv",
+                              usecols=['movie_id', 'prop', 'obj', 'obj_code'])
+full_prop_graph = full_prop_graph.set_index('movie_id')
+
+ratings = pd.read_csv("../dataset/1851_movies_ratings.txt", sep='\t', header=None)
+ratings.columns = ['user_id', 'movie_id', 'rating']
+
+movie_user_prop_adj_matrix(full_prop_graph, ratings)
+
+
+
+

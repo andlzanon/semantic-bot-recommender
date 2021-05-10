@@ -12,8 +12,8 @@ Em seguida o sistema ordena essas outras propriedades dos filmes que com a carac
 2. Em seguida o algoritmo busca um subgrafo com todos os filmes e respectivas propriedades para limitar o espaço de busca
 3. O algoritmo escolhe uma ação, dentre duas, que são: recomendar um filme ou perguntar se uma outra propriedade é relevante para o usuário para buscar um novo subgrafo, baseado no subgrafo anterior
     - Para a escolha de ação, atualmente o sistema considera aleatoriamente um número, se for par realiza uma pergunta por propriedade e caso o contrário recomenda um filme
-    - Para escolher a propriedade mais relvante é importante destacar que a propriedade é uma aresta e uma entidade no grafo, como, por exemplo, Morgan Freeman como ator. Assim, é realizada uma multiplicação entre a entropia da propriedade, considerando a probabilidade de ocorrer cada valor da propriedade, multiplicado pelo TF-IDF do valor considerando o subgrafo e o grafo completo
-    - Para a escolha do filme, atualmente é escolhido o mais popular dentre aqueles que possuem as propriedades de preferencia do usuário
+    - Para escolher a propriedade mais relvante é importante destacar que a propriedade é uma aresta e uma entidade no grafo, como, por exemplo, Morgan Freeman como ator. Assim, é realizada uma soma entre a entropia da propriedade (ator), somada com a relevância do valor (Morgan Freeman) no subgrafo e a relvância global do valor (Morgan Freeman) no grafo completo. Os valores são normalizados com o zscore e os pesos da entropia, e relevâncias locais e globais possuem pesos que podem ser configurados. O padrão é 0.33 para cada
+    - Para a escolha do filme, atualmente é realizado um PageRank Personalizado em que 80% do peso são para filmes e propriedades que o usuário gostou e 20% para o resto dos nós (o grafo para o PR possui nós de usuários, filmes e valores como Morgan Freeman, a propriedade ator é uma aresta entre os filmes e o ator)
 
 4. O algoritmo executa até que uma recomendação seja aceita pelo usuário ou não encontre mais soluções
 
@@ -21,7 +21,7 @@ Em seguida o sistema ordena essas outras propriedades dos filmes que com a carac
 
 1. Importar dataset deste [repositório](https://github.com/LuanSSouza/word-recommender-api/blob/master/dataset.rar)
 2. Extrair dataset na raiz do projeto com nome da pasta dataset
-3. Executar main.py do projeto [WikidataIntegration](https://github.com/andlzanon/semantic-bot-recommender/tree/main/WikidataIntegration) para gerar o arquivo [wikidata_integration_small.csv](https://github.com/andlzanon/semantic-bot-recommender/blob/main/WikidataIntegration/wikidata_integration_small.csv)
+3. Executar wikidata_integration.py do projeto [WikidataIntegration](https://github.com/andlzanon/semantic-bot-recommender/tree/main/WikidataIntegration) para gerar o arquivo [wikidata_integration_small.csv](https://github.com/andlzanon/semantic-bot-recommender/blob/main/WikidataIntegration/wikidata_integration_small.csv)
 4. Executar main.py do projeto [SemanticBot](https://github.com/andlzanon/semantic-bot-recommender/tree/main/SemanticBot) para iniciar conversa
 
 ## Créditos de Bibliotecas:
@@ -103,40 +103,42 @@ Para instalar utilizar comando:
     1) cast member - Samuel L. Jackson
     2) cast member - Brad Pitt
     3) cast member - Thomas Kretschmann
-    4) cast member - Stanley Tucci
-    5) screenwriter - Ronald Harwood
+    4) screenwriter - Ronald Harwood
+    5) cast member - Stanley Tucci
     2
-
-    Based on your current preferences, this movie may be suited for you: 
-    "The Curious Case of Benjamin Button"
-    Because it has these properties that are relevant to you: 
-    1) cast member - Brad Pitt
-    Did you like the recommendation, didn't like the recommendation or have you already watched the movie? (yes/no/watched)
-    no
-
-    Which of these properties do you like the most? Type the number of the preferred attribute or answer "no" if you like none
-    1) nominated for - Academy Award for Best Picture
-    2) genre - drama
-    3) nominated for - Academy Award for Best Sound Mixing
-    4) nominated for - Academy Award for Best Director
-    5) nominated for - Academy Award for Best Film Editing
-    1
-
-    Which of these properties do you like the most? Type the number of the preferred attribute or answer "no" if you like none
-    1) genre - drama
-    2) production company - Universal Pictures
-    3) award received - National Board of Review: Top Ten Films
-    4) production company - The Weinstein Company
-    5) director - Quentin Tarantino
-    1
 
     Based on your current preferences, this movie may be suited for you: 
     "Inglourious Basterds"
     Because it has these properties that are relevant to you: 
-    1) cast member - Brad Pitt
+    1) main subject - World War II
+    2) cast member - Brad Pitt
+    Did you like the recommendation, didn't like the recommendation or have you already watched the movie? (yes/no/watched)
+    watched
+
+    Which of these properties do you like the most? Type the number of the preferred attribute or answer "no" if you like none
+    1) genre - drama
+    2) award received - National Board of Review: Top Ten Films
+    3) nominated for - Academy Award for Best Picture
+    4) production company - Warner Bros.
+    5) nominated for - Academy Award for Best Writing, Adapted Screenplay
+    1
+
+    Which of these properties do you like the most? Type the number of the preferred attribute or answer "no" if you like none
+    1) award received - National Board of Review: Top Ten Films
     2) nominated for - Academy Award for Best Picture
+    3) production company - Warner Bros.
+    4) nominated for - Academy Award for Best Writing, Adapted Screenplay
+    5) nominated for - Academy Award for Best Original Score
+    1
+
+    Based on your current preferences, this movie may be suited for you: 
+    "Fury"
+    Because it has these properties that are relevant to you: 
+    1) main subject - World War II
+    2) cast member - Brad Pitt
     3) genre - drama
+    4) award received - National Board of Review: Top Ten Films
     Did you like the recommendation, didn't like the recommendation or have you already watched the movie? (yes/no/watched)
     yes
 
-    Have a good time watching the movie "Inglourious Basterds". Please come again!
+    Have a good time watching the movie "Fury". Please come again!
