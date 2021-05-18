@@ -7,4 +7,5 @@ pytz==2021.1
 rdflib==5.0.0
 scipy==1.6.2
 six==1.15.0
+networkx==2.5.0
 SPARQLWrapper==1.8.5

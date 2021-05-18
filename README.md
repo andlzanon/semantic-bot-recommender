@@ -11,7 +11,11 @@ Em seguida o sistema ordena essas outras propriedades dos filmes que com a carac
 1. Incialmente o usuário escolhe de maneira explícita uma aresta e um valor importante para ele em um filme
 2. Em seguida o algoritmo busca um subgrafo com todos os filmes e respectivas propriedades para limitar o espaço de busca
 3. O algoritmo escolhe uma ação, dentre duas, que são: recomendar um filme ou perguntar se uma outra propriedade é relevante para o usuário para buscar um novo subgrafo, baseado no subgrafo anterior
-    - Para a escolha de ação, atualmente o sistema considera aleatoriamente um número, se for par realiza uma pergunta por propriedade e caso o contrário recomenda um filme
+    - Para a escolha de ação, o sistema pode utilizar vários algoritmos de aprendizado por reforço:
+      1. Aleatório
+      2. E-greedy
+      3. UCB
+      4. Thompson Sampling
     - Para escolher a propriedade mais relvante é importante destacar que a propriedade é uma aresta e uma entidade no grafo, como, por exemplo, Morgan Freeman como ator. Assim, é realizada uma soma entre a entropia da propriedade (ator), somada com a relevância do valor (Morgan Freeman) no subgrafo e a relvância global do valor (Morgan Freeman) no grafo completo. Os valores são normalizados com o zscore e os pesos da entropia, e relevâncias locais e globais possuem pesos que podem ser configurados. O padrão é 0.33 para cada
     - Para a escolha do filme, atualmente é realizado um PageRank Personalizado em que 80% do peso são para filmes e propriedades que o usuário gostou e 20% para o resto dos nós (o grafo para o PR possui nós de usuários, filmes e valores como Morgan Freeman, a propriedade ator é uma aresta entre os filmes e o ator)
 
@@ -107,29 +111,30 @@ Para instalar utilizar comando:
     5) cast member - Stanley Tucci
     2
 
+    Which of these properties do you like the most? Type the number of the preferred attribute or answer "no" if you like none
+    1) cast member - Samuel L. Jackson
+    2) cast member - Cate Blanchett
+    3) cast member - Shia LaBeouf
+    4) cast member - Tilda Swinton
+    5) genre - drama
+    5
+
     Based on your current preferences, this movie may be suited for you: 
     "Inglourious Basterds"
     Because it has these properties that are relevant to you: 
     1) main subject - World War II
     2) cast member - Brad Pitt
+    3) genre - drama
     Did you like the recommendation, didn't like the recommendation or have you already watched the movie? (yes/no/watched)
     watched
 
     Which of these properties do you like the most? Type the number of the preferred attribute or answer "no" if you like none
-    1) genre - drama
-    2) award received - National Board of Review: Top Ten Films
-    3) nominated for - Academy Award for Best Picture
-    4) production company - Warner Bros.
-    5) nominated for - Academy Award for Best Writing, Adapted Screenplay
-    1
-
-    Which of these properties do you like the most? Type the number of the preferred attribute or answer "no" if you like none
-    1) award received - National Board of Review: Top Ten Films
-    2) nominated for - Academy Award for Best Picture
-    3) production company - Warner Bros.
-    4) nominated for - Academy Award for Best Writing, Adapted Screenplay
-    5) nominated for - Academy Award for Best Original Score
-    1
+    1) cast member - Cate Blanchett
+    2) cast member - Shia LaBeouf
+    3) cast member - Tilda Swinton
+    4) award received - National Board of Review: Top Ten Films
+    5) cast member - Jason Isaacs
+    4
 
     Based on your current preferences, this movie may be suited for you: 
     "Fury"
@@ -139,6 +144,16 @@ Para instalar utilizar comando:
     3) genre - drama
     4) award received - National Board of Review: Top Ten Films
     Did you like the recommendation, didn't like the recommendation or have you already watched the movie? (yes/no/watched)
+    watched
+
+    Based on your current preferences, this movie may be suited for you: 
+    "The Curious Case of Benjamin Button"
+    Because it has these properties that are relevant to you: 
+    1) main subject - World War II
+    2) cast member - Brad Pitt
+    3) genre - drama
+    4) award received - National Board of Review: Top Ten Films
+    Did you like the recommendation, didn't like the recommendation or have you already watched the movie? (yes/no/watched)
     yes
 
-    Have a good time watching the movie "Fury". Please come again!
+    Have a good time watching the movie "The Curious Case of Benjamin Button". Please come again!

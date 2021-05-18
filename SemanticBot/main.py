@@ -1,9 +1,8 @@
 import numpy as np
 import pandas as pd
 import networkx as nx
+from bandit import thompson_sampling as ts
 from scipy.stats import entropy
-from random import seed
-from random import randint
 
 
 def prop_most_pop(sub_graph: pd.DataFrame, prop: str):
@@ -173,7 +172,7 @@ def order_props(sub_graph: pd.DataFrame, global_zscore: dict, properties: list, 
 
     # remove the favorites to not show again
     for t in properties:
-        split_dfs = split_dfs[(split_dfs['prop'] != t[0]) & (split_dfs['obj'] != t[1])]
+        split_dfs = split_dfs[(split_dfs['obj'] != t[1])]
 
     return split_dfs.sort_values(by=['value'], ascending=False)
 
@@ -222,6 +221,9 @@ g_zscore = generate_global_zscore(full_prop_graph, path="./global_properties.csv
 # copy original property graph to shrink it
 sub_graph = full_prop_graph.copy()
 
+# create bandit to decide when to ask and recommend
+ban = ts.ThompsonSamplingBandit(2)
+
 # start conversation
 print("Hello, I'm here to help you choose a movie. We have these characteristics: \n")
 print(*sub_graph['prop'].unique(), sep="\n", end="\n\n")
@@ -242,7 +244,7 @@ watched = []
 prefered_objects = [sub_graph[(sub_graph['prop'] == p_chosen) & (sub_graph['obj'] == o_chosen)]['obj_code'].unique()[0]]
 prefered_prop = [(p_chosen, o_chosen)]
 user_id = 'U' + str(ratings['user_id'].max() + 1)
-seed(42)
+np.random.RandomState(42)
 
 # start the loop until the recommendation is accepted or there are no movies based on users' filters
 while not end_conversation:
@@ -255,10 +257,11 @@ while not end_conversation:
     # or if sub graph is empty there are no entries or there are no movies, recommendation fails
     while resp == "no" or resp == "watched":
         # choose action and ask if user liked it
-        ask = randint(0, 10) % 2
+        ask = ban.pull()
+        reward = 0
 
-        # if ask == 0 suggest new property
-        if ask == 0:
+        # if ask suggest new property
+        if ask and len(sub_graph.index.unique()) > 1:
             # show most relevant property
             top_p = order_props(sub_graph, g_zscore, prefered_prop, [1/3, 1/3, 1/3])
 
@@ -281,16 +284,16 @@ while not end_conversation:
                 o_chose_code = str(sub_graph[(sub_graph['prop'] == p_chosen) & (sub_graph['obj'] == o_chosen)]['obj_code'].unique()[0])
                 prefered_objects.append(o_chose_code)
                 prefered_prop.append((p_chosen, o_chosen))
+                if resp == 1:
+                    reward = 1
+
             else:
                 for index, row in dif_properties.iterrows():
                     p = row[0]
                     o = row[1]
-                    movies_with_prop = sub_graph.loc[(sub_graph['prop'] == p) & (sub_graph['obj'] == o)].index
-                    for m in movies_with_prop:
-                        top_p = top_p.drop(m)
-                        sub_graph = sub_graph.drop(m)
+                    sub_graph = sub_graph.loc[(sub_graph['obj'] != o)]
 
-        # if ask != 0 recommend movie
+        # if ask == 0 recommend movie
         else:
             top_m = order_movies_by_pagerank(sub_graph, edgelist, watched, prefered_objects, [0.8, 0.2], True)
 
@@ -324,14 +327,21 @@ while not end_conversation:
             else:
                 m_id = top_m.index[0]
                 if resp == "watched":
+                    reward = 1
                     watched.append(m_id)
                     edgelist = edgelist.append({"origin": user_id, "destination": 'M' + str(m_id)}, ignore_index=True)
 
                 top_m = top_m.drop(m_id)
                 sub_graph = sub_graph.drop(m_id)
 
+        # updated bandit based on the response of the user
+        ban.update(ask, reward)
+
+        # if there are no movies to recommend end conversation
         if len(sub_graph) == 0 or len(sub_graph.index.unique()) == 0:
             print("\nThere are no movies that corresponds to your preferences on our database "
                   "or you already watched them all")
             end_conversation = True
             break
+
+ban.show_statistics()
