@@ -344,4 +344,5 @@ while not end_conversation:
             end_conversation = True
             break
 
-ban.show_statistics()
+# show bandit statistics
+# ban.show_statistics()
