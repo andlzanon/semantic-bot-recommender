@@ -36,13 +36,16 @@ Para instalar utilizar comando:
 * [numpy 1.19.1](https://numpy.org/)
 * [pandas 1.0.4](https://pandas.pydata.org/)
 * [scipy 1.5.0](https://www.scipy.org/)
+* [networkx 2.5.0](https://github.com/networkx/networkx)
 * [SPARQLWrapper 1.8.5](https://github.com/RDFLib/sparqlwrapper)
+
+A integração com faixa etária indicativa foi realizada com API [OMBD](https://www.omdbapi.com/)
 
 ## Consulta SPARQL
     SELECT DISTINCT
       ?itemLabel
       ?propertyItemLabel
-      ?valueLabel ?imdbId
+      ?valueLabel ?value ?imdbId
     WHERE 
     {
       ?item wdt:P345 ?imdbId .

@@ -11,7 +11,7 @@ rated_movies = rated_movies.set_index('movie_id')
 # api-endpoint
 api_url = "http://www.omdbapi.com/"
 
-for m in rated_movies.loc[rated_movies['rated'].isna() == True].index:
+for m in rated_movies.loc[rated_movies['rated'].isnull()].index:
     try:
         movie_id = str(m)
 
@@ -24,7 +24,7 @@ for m in rated_movies.loc[rated_movies['rated'].isna() == True].index:
 
         # defining a params dict for the parameters to be sent to the API
         params = {'i': imdb,
-                  'apikey': 'api_key'}
+                  'apikey': 'ab3ec363'}
 
         # sending get request and saving the response as response object
         r = requests.get(url=api_url, params=params)
