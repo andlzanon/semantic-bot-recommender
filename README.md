@@ -36,6 +36,7 @@ Para instalar utilizar comando:
 * [numpy 1.19.1](https://numpy.org/)
 * [pandas 1.0.4](https://pandas.pydata.org/)
 * [scipy 1.5.0](https://www.scipy.org/)
+* [requests 2.25.1](https://github.com/psf/requests)
 * [networkx 2.5.0](https://github.com/networkx/networkx)
 * [SPARQLWrapper 1.8.5](https://github.com/RDFLib/sparqlwrapper)
 
