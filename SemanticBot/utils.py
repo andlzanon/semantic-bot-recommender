@@ -33,6 +33,25 @@ def calculate_entropy(sub_graph: pd.DataFrame):
     return entropies
 
 
+def show_props(graph: pd.DataFrame, percentage: float):
+    """
+    Function that returns the properties that appear in a bigger percentage that that one passed as a parameter to the
+    function
+    :param graph: wikidata graph
+    :param percentage: threshold of movies with prop to show to the user
+    :return: list of properties that have higher threshold
+    """
+    props_t_show = []
+    total_movies = len(graph.index.unique())
+    for p in graph['prop'].unique():
+        movies_prop = len(graph[(graph['prop'] == p)].index.unique())
+
+        rel = movies_prop/total_movies
+        if rel >= percentage:
+            props_t_show.append(p)
+
+    return props_t_show
+
 def shrink_graph(sub_graph: pd.DataFrame, prop: str, obj: str):
     """
     Function that shrinks the graph to a sub graph based on the property and value passed on the parameters.

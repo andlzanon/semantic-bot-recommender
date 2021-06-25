@@ -37,7 +37,7 @@ age = int(input())
 sub_graph = utils.remove_films_by_age(age, movie_rate, sub_graph)
 
 print("We have these characteristics from our movie database: \n")
-print(*sub_graph['prop'].unique(), sep="\n", end="\n\n")
+print(*utils.show_props(sub_graph, 0.33), sep="\n", end="\n\n")
 print("From which one are you interested in exploring today?")
 
 # set end conversation to false to end the talk when movie rec is accepted
