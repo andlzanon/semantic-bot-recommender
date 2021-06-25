@@ -70,39 +70,80 @@ while not end_conversation:
         # choose action and ask if user liked it
         ask = ban.pull()
         reward = 0
+        page_len = 5
+        page_start = 0
+        page_end = page_start + page_len
 
         # if ask suggest new property
         if ask and len(sub_graph.index.unique()) > 1:
             # show most relevant property
             top_p = utils.order_props(sub_graph, g_zscore, prefered_prop, [1/3, 1/3, 1/3])
 
-            print("\nWhich of these properties do you like the most? Type the number of the preferred attribute or "
-                  "answer \"no\" if you like none")
-            dif_properties = top_p.drop_duplicates()[:5]
+            print(
+                "\nWhich of these properties do you like the most? Type the number of the preferred "
+                "attribute or type \"Next Page\" or  \"Previous Page\"  to see more properties"
+            )
+
+            dif_properties = top_p.drop_duplicates()[page_start:page_end]
             for i in range(0, len(dif_properties)):
                 p_topn = str(dif_properties.iloc[i]['prop'])
                 o_topn = str(dif_properties.iloc[i]['obj'])
                 print(str(i + 1) + ") " + p_topn + " - " + o_topn)
 
+            print("Next Page")
+            if page_start > 0:
+                print("Previous Page")
+
             # hear answer
             resp = input()
+            try:
+                value = int(resp)
+
+            except ValueError:
+                exit = False
+                while not exit:
+                    if resp == "Next Page":
+                        page_start = page_end + 1
+                        page_end = page_start + page_len
+                    else:
+                        page_end = page_start - 1
+                        page_start = page_end - page_len
+
+                    print(
+                        "\nWhich of these properties do you like the most? Type the number of the preferred "
+                        "attribute or type \"Next Page\" or  \"Previous Page\"  to see more properties"
+                    )
+
+                    dif_properties = top_p.drop_duplicates()[page_start:page_end]
+                    for i in range(0, len(dif_properties)):
+                        p_topn = str(dif_properties.iloc[i]['prop'])
+                        o_topn = str(dif_properties.iloc[i]['obj'])
+                        print(str(i + 1) + ") " + p_topn + " - " + o_topn)
+
+                    print("Next Page")
+                    if page_start > 0:
+                        print("Previous Page")
+
+                    resp = input()
+                    try:
+                        value = int(resp)
+                        exit = True
+
+                    except ValueError:
+                        continue
 
             # if user chose prop, get the prop, the obj and obj code and append it to the favorties properties
             # else remove all prop from graph
-            if resp != "no":
-                p_chosen = str(dif_properties.iloc[int(resp) - 1]['prop'])
-                o_chosen = str(dif_properties.iloc[int(resp) - 1]['obj'])
-                o_chose_code = str(sub_graph[(sub_graph['prop'] == p_chosen) & (sub_graph['obj'] == o_chosen)]['obj_code'].unique()[0])
+            if 0 <= value <= 5:
+                p_chosen = str(dif_properties.iloc[value - 1]['prop'])
+                o_chosen = str(dif_properties.iloc[value - 1]['obj'])
+                o_chose_code = str(
+                    sub_graph[(sub_graph['prop'] == p_chosen) & (sub_graph['obj'] == o_chosen)][
+                        'obj_code'].unique()[0])
                 prefered_objects.append(o_chose_code)
                 prefered_prop.append((p_chosen, o_chosen))
-                if resp == 1:
+                if value == 1:
                     reward = 1
-
-            else:
-                for index, row in dif_properties.iterrows():
-                    p = row[0]
-                    o = row[1]
-                    sub_graph = sub_graph.loc[(sub_graph['obj'] != o)]
 
         # if ask == 0 recommend movie
         else:
