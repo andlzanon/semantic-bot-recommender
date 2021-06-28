@@ -22,7 +22,7 @@ ratings['destination'] = ['M' + x for x in ratings['movie_id'].astype(str)]
 edgelist = pd.concat([edgelist, ratings[['origin', 'destination']]])
 
 # get the global zscore for the movies
-g_zscore = utils.generate_global_zscore(full_prop_graph, path="./global_properties.csv", flag=False)
+g_zscore = utils.generate_global_zscore(full_prop_graph, edgelist, path="./global_properties.csv", flag=True)
 
 # copy original property graph to shrink it
 sub_graph = full_prop_graph.copy()
@@ -90,7 +90,9 @@ while not end_conversation:
         # if ask suggest new property
         if ask and len(sub_graph.index.unique()) > 1:
             # show most relevant property
-            top_p = utils.order_props(sub_graph, g_zscore, prefered_prop, [1/3, 1/3, 1/3])
+            # top_p = utils.order_props_relevance(sub_graph, g_zscore, prefered_prop, [1/3, 1/3, 1/3])
+            top_p = utils.order_props_pr(sub_graph, g_zscore, edgelist, watched, prefered_objects, prefered_prop,
+                                         [0.8, 0.2], [1/3, 1/3, 1/3], True)
             page_len = 5
             page_start = 0
             page_end = page_start + page_len
