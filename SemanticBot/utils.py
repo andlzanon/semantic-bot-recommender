@@ -8,9 +8,9 @@ def prop_most_pop(sub_graph: pd.DataFrame, prop: str):
     Function that returns the most popular values for property prop
     :param sub_graph: sub graph that represents the current graph that matches the users preferences
     :param prop: property the user is looking for
-    :return: list of the ten most popular values of property
+    :return: ordered list of most popular values of property
     """
-    return sub_graph[(sub_graph['prop'] == prop)]['obj'].value_counts().index.values[:10]
+    return sub_graph[(sub_graph['prop'] == prop)]['obj'].value_counts().index.values
 
 
 def calculate_entropy(sub_graph: pd.DataFrame):
@@ -51,6 +51,7 @@ def show_props(graph: pd.DataFrame, percentage: float):
             props_t_show.append(p)
 
     return props_t_show
+
 
 def shrink_graph(sub_graph: pd.DataFrame, prop: str, obj: str):
     """

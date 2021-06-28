@@ -40,22 +40,38 @@ print("We have these characteristics from our movie database: \n")
 print(*utils.show_props(sub_graph, 0.33), sep="\n", end="\n\n")
 print("From which one are you interested in exploring today?")
 
-# set end conversation to false to end the talk when movie rec is accepted
-end_conversation = False
-
 # ask user for fav prop and value and then shrink graph
 p_chosen = str(input())
+exit = False
+page_len = 10
+page_start = 0
+page_end = page_start + page_len
 print("\nThese are the favorites along the characteristic:")
-print(*utils.prop_most_pop(sub_graph, p_chosen), sep="\n", end="\n\n")
-print("Which one are you looking for in one of these?")
-o_chosen = str(input())
+while not exit:
+    print(*utils.prop_most_pop(sub_graph, p_chosen)[page_start:page_end], sep="\n", end="\n")
+    print("Next Page ->")
+    if page_start > 0:
+        print("<- Previous Page")
+    print("Which one are you looking for in one of these? "
+          "Type \"Next Page\" or  \"Previous Page\"  to see more properties")
+    o_chosen = str(input())
+    if o_chosen == "Next Page":
+        page_start = page_end + 1
+        page_end = page_start + page_len
+    elif o_chosen == "Previous Page":
+        page_end = page_start - 1
+        page_start = page_end - page_len
+    else:
+        exit = True
 
-# create vectors of movies and objects of preference and set seed and user id
+# create vectors of movies and objects of preference and set seed and user id and set end conversation to false to end
+# the talk when movie rec is accepted
 watched = []
 prefered_objects = [sub_graph[(sub_graph['prop'] == p_chosen) & (sub_graph['obj'] == o_chosen)]['obj_code'].unique()[0]]
 prefered_prop = [(p_chosen, o_chosen)]
 user_id = 'U' + str(ratings['user_id'].max() + 1)
 np.random.RandomState(42)
+end_conversation = False
 
 # start the loop until the recommendation is accepted or there are no movies based on users' filters
 while not end_conversation:
@@ -70,14 +86,14 @@ while not end_conversation:
         # choose action and ask if user liked it
         ask = ban.pull()
         reward = 0
-        page_len = 5
-        page_start = 0
-        page_end = page_start + page_len
 
         # if ask suggest new property
         if ask and len(sub_graph.index.unique()) > 1:
             # show most relevant property
             top_p = utils.order_props(sub_graph, g_zscore, prefered_prop, [1/3, 1/3, 1/3])
+            page_len = 5
+            page_start = 0
+            page_end = page_start + page_len
 
             print(
                 "\nWhich of these properties do you like the most? Type the number of the preferred "
@@ -90,9 +106,9 @@ while not end_conversation:
                 o_topn = str(dif_properties.iloc[i]['obj'])
                 print(str(i + 1) + ") " + p_topn + " - " + o_topn)
 
-            print("Next Page")
+            print("Next Page ->")
             if page_start > 0:
-                print("Previous Page")
+                print("Previous Page ->")
 
             # hear answer
             resp = input()
@@ -120,9 +136,9 @@ while not end_conversation:
                         o_topn = str(dif_properties.iloc[i]['obj'])
                         print(str(i + 1) + ") " + p_topn + " - " + o_topn)
 
-                    print("Next Page")
+                    print("Next Page ->")
                     if page_start > 0:
-                        print("Previous Page")
+                        print("<- Previous Page")
 
                     resp = input()
                     try:
