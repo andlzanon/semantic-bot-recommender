@@ -71,6 +71,20 @@ def shrink_graph(sub_graph: pd.DataFrame, prop: str, obj: str):
 
 def page_rank(graph: pd.DataFrame, edgelist: pd.DataFrame, watched: list, objects: list, weight_vec: list,
               use_objs=False):
+    """
+    Run the page rank on the graph
+
+    :param graph: sub graph that represents the current graph that matches the users preferences
+    :param edgelist: edge list of users and movies from the dataset. The dataframe has two columns, the origin of the
+        edge and the destination
+    :param watched: movies that the user watched
+    :param objects: codes of objects on the graph that the user liked (eg Q1245)
+    :param weight_vec: list with size two and sum equal to one with the weights of the personalization to the watched
+    movies and the rest of the nodes
+    :param use_objs: boolean value to use on the pagerank or not the objects list that the user liked
+    :return:
+    """
+
     # append edgelist that only hast movies and user edges and add the movies to values on the wikidata edges
     copy = graph.copy()
     copy['origin'] = ['M' + x for x in copy.index.astype(str)]
@@ -117,8 +131,7 @@ def order_movies_by_pagerank(sub_graph: pd.DataFrame, edgelist: pd.DataFrame, wa
     :param edgelist: edge list of users and movies from the dataset. The dataframe has two columns, the origin of the
         edge and the destination
     :param watched: movies that the user watched
-    :param objects: objects (e.g. Martin Scorsese, Leonardo Di Caprio, Bred Pitt, Disney, etc) on the graph that
-        the user liked
+    :param objects: codes of objects on the graph that the user liked (eg Q1245)
     :param weight_vec: list with size two and sum equal to one with the weights of the personalization to the watched
     movies and the rest of the nodes
     :param use_objs: boolean value to use on the pagerank or not the objects list that the user liked
@@ -152,9 +165,29 @@ def order_movies_by_pop(sub_graph: pd.DataFrame, ratings: pd.DataFrame):
 
 def order_props_pr(sub_graph: pd.DataFrame, global_zscore: pd.DataFrame, edgelist: pd.DataFrame, watched: list,
                    objects: list, objects_names: list, weight_vec_pr: list, weight_vec_rank: list, use_objs=False):
+    """
+    Order the properties by the page rank and the entropy of the properties. The formula is:
+    (weight_vec_rank[0] * entropy of property (actor, genre, etc)) +
+    (weight_vec_rank[1] * pr of full graph of value (di Caprio, etc)) +
+    (weight_vec_rank[2] * pr of sub graph of value
+    :param sub_graph: sub graph that represents the current graph that matches the users preferences
+    :param global_zscore:
+    :param edgelist: edge list of users and movies from the dataset. The dataframe has two columns, the origin of the
+        edge and the destination
+    :param watched: movies that the user watched
+    :param objects: codes of objects on the graph that the user liked (eg Q1245)
+    :param objects_names: names of the objects on the graph that the user liked (e.g. Martin Scorsese, Leonardo Di Caprio, Bred Pitt, Disney, etc)
+    :param weight_vec_pr: list with size two and sum equal to one with the weights of the personalization to the watched
+    movies and the rest of the nodes
+    :param weight_vec_rank: weight to compute on the formula to obtain value of property
+    :param use_objs: boolean value to use on the pagerank or not the objects list that the user liked
+    :return: pandas df with the properties orderded by value
+    """
 
-    pr = page_rank(sub_graph, edgelist, watched, objects, weight_vec_pr, use_objs)
     sub_slice = sub_graph[['prop', 'obj', 'obj_code']]
+
+    # page rank of local graph and value of local relevance
+    pr = page_rank(sub_graph, edgelist, watched, objects, weight_vec_pr, use_objs)
 
     rank = sub_slice.copy()
     rank['local_pr'] = rank.apply(lambda x: pr[x['obj_code']], axis=1)
@@ -165,14 +198,16 @@ def order_props_pr(sub_graph: pd.DataFrame, global_zscore: pd.DataFrame, edgelis
     rank['h'] = rank.apply(lambda x: entrs[x['prop']], axis=1)
     rank['h_zscore'] = (rank['h'] - rank['h'].mean()) / rank['h'].std()
 
+    # global relevance
     rank['global_zscore'] = rank.apply(lambda x: global_zscore['pr_zscore'][(x['prop'], x['obj'])],
                                                  axis=1)
 
-    # sum the zscores for the total value
+    # sum the zscores for the total relevance
     rank['value'] = (weight_vec_rank[0] * rank['h_zscore']) + \
                          (weight_vec_rank[1] * rank['local_zscore']) + \
                          (weight_vec_rank[2] * rank['global_zscore'])
 
+    # remove liked objects
     for p in objects_names:
         rank = rank[(rank['obj'] != p[1])]
 

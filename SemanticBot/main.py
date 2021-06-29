@@ -72,6 +72,7 @@ prefered_prop = [(p_chosen, o_chosen)]
 user_id = 'U' + str(ratings['user_id'].max() + 1)
 np.random.RandomState(42)
 end_conversation = False
+force_rec = False
 
 # start the loop until the recommendation is accepted or there are no movies based on users' filters
 while not end_conversation:
@@ -84,8 +85,11 @@ while not end_conversation:
     # or if sub graph is empty there are no entries or there are no movies, recommendation fails
     while resp == "no" or resp == "watched":
         # choose action and ask if user liked it
-        ask = ban.pull()
         reward = 0
+        if not force_rec:
+            ask = ban.pull()
+        else:
+            ask = 0
 
         # if ask suggest new property
         if ask and len(sub_graph.index.unique()) > 1:
@@ -99,7 +103,8 @@ while not end_conversation:
 
             print(
                 "\nWhich of these properties do you like the most? Type the number of the preferred "
-                "attribute or type \"Next Page\" or  \"Previous Page\"  to see more properties"
+                "attribute or type \"Next Page\" or  \"Previous Page\"  to see more properties and \"Recommend\" "
+                "to suggest a movie"
             )
 
             dif_properties = top_p.drop_duplicates()[page_start:page_end]
@@ -108,6 +113,7 @@ while not end_conversation:
                 o_topn = str(dif_properties.iloc[i]['obj'])
                 print(str(i + 1) + ") " + p_topn + " - " + o_topn)
 
+            print("Recommend")
             print("Next Page ->")
             if page_start > 0:
                 print("Previous Page ->")
@@ -123,13 +129,17 @@ while not end_conversation:
                     if resp == "Next Page":
                         page_start = page_end + 1
                         page_end = page_start + page_len
-                    else:
+                    elif resp == "Previous Page":
                         page_end = page_start - 1
                         page_start = page_end - page_len
+                    else:
+                        force_rec = True
+                        break
 
                     print(
                         "\nWhich of these properties do you like the most? Type the number of the preferred "
-                        "attribute or type \"Next Page\" or  \"Previous Page\"  to see more properties"
+                        "attribute or type \"Next Page\" or  \"Previous Page\"  to see more properties and "
+                        "\"Recommend\" to suggest a movie"
                     )
 
                     dif_properties = top_p.drop_duplicates()[page_start:page_end]
@@ -138,6 +148,7 @@ while not end_conversation:
                         o_topn = str(dif_properties.iloc[i]['obj'])
                         print(str(i + 1) + ") " + p_topn + " - " + o_topn)
 
+                    print("Recommend")
                     print("Next Page ->")
                     if page_start > 0:
                         print("<- Previous Page")
@@ -152,7 +163,7 @@ while not end_conversation:
 
             # if user chose prop, get the prop, the obj and obj code and append it to the favorties properties
             # else remove all prop from graph
-            if 0 <= value <= 5:
+            if not force_rec and 0 < value <= 5:
                 p_chosen = str(dif_properties.iloc[value - 1]['prop'])
                 o_chosen = str(dif_properties.iloc[value - 1]['obj'])
                 o_chose_code = str(
@@ -165,6 +176,7 @@ while not end_conversation:
 
         # if ask == 0 recommend movie
         else:
+            force_rec = False
             top_m = utils.order_movies_by_pagerank(sub_graph, edgelist, watched, prefered_objects, [0.8, 0.2], True)
 
             # case if all movies with properties were recommended but no movies were accepted by user
@@ -206,7 +218,8 @@ while not end_conversation:
                 sub_graph = sub_graph.drop(m_id)
 
         # updated bandit based on the response of the user
-        ban.update(ask, reward)
+        if not force_rec:
+            ban.update(ask, reward)
 
         # if there are no movies to recommend end conversation
         if len(sub_graph) == 0 or len(sub_graph.index.unique()) == 0:

@@ -1,35 +1,35 @@
 # Semantic Bot Movie Recommender 
 
-## Descrição do Algoritmo:
-Codificação de um algoritmo de recomendação conversacional de filmes utilizando Linked Open Data.
+## Algorithm Description:
+Conversacional recommender system with Linked Open Data. Given an property (actor, director, genre, etc) and a value (di Caprio, Tarantino, drama, etc) on the Wikidata (https://www.wikidata.org/) knowledge graph (KG), the system talks to the user asking questions about other properties or recommending movies. The systems ranks the property, value tuple and based on the Personalized Page-Rank algorithm on the KG and a reinforcement learning algorithm chooses if the system will ask a question for a movie property or recommend. The session finishes until a suggestion is accepted by the user or there aren't any movies left with the properties that the user liked.  
 
-A partir de uma propriedade (ator, tema, produtora, diretor, etc.) e valor (ação, Woody Allen, Scarlett Johansson, etc.) incialmente declarados pelo usuário, o algoritmo busca um subgrafo na Wikidata (https://www.wikidata.org/) de todos os filmes e propriedades deste que contém as preferências inicialmente declaradas pelo usuário.
-
-Em seguida o sistema ordena essas outras propriedades dos filmes que com a característica  incialmente explicitada pelo usuário e vai perguntando por propriedades ou recomendações mais relevantes até que chegue a uma recomendação ou falhe por falta de opções.
-
-## Detalhamento da Proposta:
-1. Incialmente o usuário escolhe de maneira explícita uma aresta e um valor importante para ele em um filme
-2. Em seguida o algoritmo busca um subgrafo com todos os filmes e respectivas propriedades para limitar o espaço de busca
-3. O algoritmo escolhe uma ação, dentre duas, que são: recomendar um filme ou perguntar se uma outra propriedade é relevante para o usuário para buscar um novo subgrafo, baseado no subgrafo anterior
-    - Para a escolha de ação, o sistema pode utilizar vários algoritmos de aprendizado por reforço:
-      1. Aleatório
+## Implementation Details of the Proposal:
+1. Initially the user chooses a property and a value relevant to her/him on a movie; 
+2. Then, the algorithm reduces the original graph into a subgraph to limit the search space. The movies and properties are the ones that contains the property and value chosen by the user as relevants;
+3. The algorithm chooses an action between: asking a question or recommending a movie;
+    - To choose an action four algorithms were implemented:
+      1. Random
       2. E-greedy
       3. UCB
       4. Thompson Sampling
-    - Para escolher a propriedade mais relvante é importante destacar que a propriedade é uma aresta e uma entidade no grafo, como, por exemplo, Morgan Freeman como ator. Assim, é realizada uma soma entre a entropia da propriedade (ator), somada com a relevância do valor (Morgan Freeman) no subgrafo e a relvância global do valor (Morgan Freeman) no grafo completo. Os valores são normalizados com o zscore e os pesos da entropia, e relevâncias locais e globais possuem pesos que podem ser configurados. O padrão é 0.33 para cada
-    - Para a escolha do filme, atualmente é realizado um PageRank Personalizado em que 80% do peso são para filmes e propriedades que o usuário gostou e 20% para o resto dos nós (o grafo para o PR possui nós de usuários, filmes e valores como Morgan Freeman, a propriedade ator é uma aresta entre os filmes e o ator)
+    - Currently the Thompson Sampling is the one running on the system;
+    - To rank the properties the formula bellow is used. The first term is the entropy of the property (actor, director, genre, etc). This term is responsible to choose a property that will reduce mostly the current graph in order to lower the quantity of questions. The second term is responsible to compute the local relevance of the value based on the Personalized PageRank of the subgraph with 80% of the weight to movies and values that the user liked and 20% to the rest of the nodes. The final term is the global relevance based on the Personalized PageRank of the full Wikidata graph. All the terms are normalized with zscore and weighted. The weights are currently 0.33 to each;  
 
-4. O algoritmo executa até que uma recomendação seja aceita pelo usuário ou não encontre mais soluções
+        <img src="https://render.githubusercontent.com/render/math?math=value =\alpha*zscore(entropy(p)) %2B \beta*zscore(pagerank(subgraph, value)) %2B \gama*zscore(pagerank(fullgraph, value))">
 
-## Reprodução:
+    - To choose a movie the same Personalized Page Rank is used with 80% of the weight to movies and values that the user liked and 20% to the rest of the nodes.
 
-1. Importar dataset deste [repositório](https://github.com/LuanSSouza/word-recommender-api/blob/master/dataset.rar)
-2. Extrair dataset na raiz do projeto com nome da pasta dataset
-3. Executar wikidata_integration.py do projeto [WikidataIntegration](https://github.com/andlzanon/semantic-bot-recommender/tree/main/WikidataIntegration) para gerar o arquivo [wikidata_integration_small.csv](https://github.com/andlzanon/semantic-bot-recommender/blob/main/WikidataIntegration/wikidata_integration_small.csv)
-4. Executar main.py do projeto [SemanticBot](https://github.com/andlzanon/semantic-bot-recommender/tree/main/SemanticBot) para iniciar conversa
+4. The algorithm loops between 2 and 3 until a recommendation is accepted.
 
-## Créditos de Bibliotecas:
-Para instalar utilizar comando: 
+## Reproduce Results:
+
+1. Import dataset from this [repository](https://github.com/LuanSSouza/word-recommender-api/blob/master/dataset.rar);
+2. Extract dataset on the root of this project;
+3. (Optional) Execute the wikidata_integration.py of the project [WikidataIntegration](https://github.com/andlzanon/semantic-bot-recommender/tree/main/WikidataIntegration) to generate the file [wikidata_integration_small.csv](https://github.com/andlzanon/semantic-bot-recommender/blob/main/WikidataIntegration/wikidata_integration_small.csv);
+4. Execute the main.py of the project [SemanticBot](https://github.com/andlzanon/semantic-bot-recommender/tree/main/SemanticBot) to start the conversacion. 
+
+## Libraries used:
+To install the libraries use the command: 
     
     pip install requirements
 
@@ -40,9 +40,9 @@ Para instalar utilizar comando:
 * [networkx 2.5.0](https://github.com/networkx/networkx)
 * [SPARQLWrapper 1.8.5](https://github.com/RDFLib/sparqlwrapper)
 
-A integração com faixa etária indicativa foi realizada com API [OMBD](https://www.omdbapi.com/)
+The integration to get the ratings of the movies (PG, R, etc) the [OMBD](https://www.omdbapi.com/) API was used.
 
-## Consulta SPARQL
+## SPARQL Query
     SELECT DISTINCT
       ?itemLabel
       ?propertyItemLabel
@@ -55,21 +55,24 @@ A integração com faixa etária indicativa foi realizada com API [OMBD](https:/
       ?propertyItem wikibase:directClaim ?propertyRel .
       SERVICE wikibase:label { bd:serviceParam wikibase:language "en". } .
       FILTER( 
-        ?propertyRel = wdt:P179 || 
-        ?propertyRel = wdt:P136 || ?propertyRel = wdt:P170 || 
-        ?propertyRel = wdt:P57 || ?propertyRel = wdt:P58 || ?propertyRel = wdt:P161 ||
+        ?propertyRel = wdt:P179 || ?propertyRel = wdt:P136 || 
+        ?propertyRel = wdt:P170 || ?propertyRel = wdt:P57 || 
+        ?propertyRel = wdt:P58 || ?propertyRel = wdt:P161 ||
         ?propertyRel = wdt:P725 ||  ?propertyRel = wdt:P1040 ||
-        ?propertyRel = wdt:P86 || ?propertyRel = wdt:P162 ||  ?propertyRel = wdt:P272 || 
-        ?propertyRel = wdt:P344 || ?propertyRel = wdt:P166 || ?propertyRel = wdt:P1411 || 
-        ?propertyRel = wdt:P2515 ||
-        ?propertyRel = wdt:P921 || ?propertyRel = wdt:P175
+        ?propertyRel = wdt:P86 || ?propertyRel = wdt:P162 ||  
+        ?propertyRel = wdt:P272 || ?propertyRel = wdt:P344 || 
+        ?propertyRel = wdt:P166 || ?propertyRel = wdt:P1411 || 
+        ?propertyRel = wdt:P2515 || ?propertyRel = wdt:P921 || 
+        ?propertyRel = wdt:P175
       )  
     }
     ORDER BY ?imdbId
 
-## Exemplo de Conversa
+## Example of Conversacion
 
-    Hello, I'm here to help you choose a movie. We have these characteristics: 
+    Hello, I'm here to help you choose a movie. What's your age? 
+    24
+    We have these characteristics from our movie database: 
 
     director
     screenwriter
@@ -79,85 +82,89 @@ A integração com faixa etária indicativa foi realizada com API [OMBD](https:/
     producer
     production company
     director of photography
-    main subject
     film editor
-    costume designer
-    award received
-    nominated for
-    performer
-    part of the series
-    voice actor
-    creator
 
     From which one are you interested in exploring today?
-    main subject
+    director
 
     These are the favorites along the characteristic:
-    revenge
-    terrorism
-    dysfunctional family
-    serial killer
-    supernatural
-    time travel
-    World War II
-    aviation
-    incest
-    suicide
+    Steven Soderbergh
+    Woody Allen
+    Ridley Scott
+    Steven Spielberg
+    Clint Eastwood
+    Shawn Levy
+    Robert Rodriguez
+    Brett Ratner
+    Martin Scorsese
+    Dennis Dugan
+    Next Page ->
+    Which one are you looking for in one of these? Type "Next Page" or  "Previous Page"  to see more properties
+    Martin Scorsese
 
-    Which one are you looking for in one of these?
-    World War II
-
-    Which of these properties do you like the most? Type the number of the preferred attribute or answer "no" if you like none
-    1) cast member - Samuel L. Jackson
-    2) cast member - Brad Pitt
-    3) cast member - Thomas Kretschmann
-    4) screenwriter - Ronald Harwood
-    5) cast member - Stanley Tucci
-    2
-
-    Which of these properties do you like the most? Type the number of the preferred attribute or answer "no" if you like none
-    1) cast member - Samuel L. Jackson
-    2) cast member - Cate Blanchett
-    3) cast member - Shia LaBeouf
-    4) cast member - Tilda Swinton
-    5) genre - drama
-    5
-
-    Based on your current preferences, this movie may be suited for you: 
-    "Inglourious Basterds"
+    Based on your current preferences, this Not Rated rated movie may be suited for you: 
+    "George Harrison: Living in the Material World"
     Because it has these properties that are relevant to you: 
-    1) main subject - World War II
-    2) cast member - Brad Pitt
-    3) genre - drama
+    1) director - Martin Scorsese
     Did you like the recommendation, didn't like the recommendation or have you already watched the movie? (yes/no/watched)
-    watched
+    no
 
-    Which of these properties do you like the most? Type the number of the preferred attribute or answer "no" if you like none
-    1) cast member - Cate Blanchett
-    2) cast member - Shia LaBeouf
-    3) cast member - Tilda Swinton
-    4) award received - National Board of Review: Top Ten Films
-    5) cast member - Jason Isaacs
+    Which of these properties do you like the most? Type the number of the preferred attribute or type "Next Page" or  "Previous Page"  to see more properties and "Recommend" to suggest a movie
+    1) genre - drama
+    2) genre - comedy film
+    3) genre - documentary film
+    4) cast member - Elia Kazan
+    5) cast member - Ben Kingsley
+    Recommend
+    Next Page ->
+    1
+
+    Which of these properties do you like the most? Type the number of the preferred attribute or type "Next Page" or  "Previous Page"  to see more properties and "Recommend" to suggest a movie
+    1) genre - comedy film
+    2) cast member - Ben Kingsley
+    3) cast member - Mark Ruffalo
+    4) cast member - Leonardo DiCaprio
+    5) cast member - Jonah Hill
+    Recommend
+    Next Page ->
     4
 
-    Based on your current preferences, this movie may be suited for you: 
-    "Fury"
+    Based on your current preferences, this R rated movie may be suited for you: 
+    "The Wolf of Wall Street"
     Because it has these properties that are relevant to you: 
-    1) main subject - World War II
-    2) cast member - Brad Pitt
-    3) genre - drama
-    4) award received - National Board of Review: Top Ten Films
+    1) director - Martin Scorsese
+    2) genre - drama
+    3) cast member - Leonardo DiCaprio
     Did you like the recommendation, didn't like the recommendation or have you already watched the movie? (yes/no/watched)
     watched
 
-    Based on your current preferences, this movie may be suited for you: 
-    "The Curious Case of Benjamin Button"
+    Based on your current preferences, this R rated movie may be suited for you: 
+    "Shutter Island"
     Because it has these properties that are relevant to you: 
-    1) main subject - World War II
-    2) cast member - Brad Pitt
-    3) genre - drama
-    4) award received - National Board of Review: Top Ten Films
+    1) director - Martin Scorsese
+    2) genre - drama
+    3) cast member - Leonardo DiCaprio
+    Did you like the recommendation, didn't like the recommendation or have you already watched the movie? (yes/no/watched)
+    watched
+
+    Which of these properties do you like the most? Type the number of the preferred attribute or type "Next Page" or  "Previous Page"  to see more properties and "Recommend" to suggest a movie
+    1) cast member - Matt Damon
+    2) cast member - Liam Neeson
+    3) cast member - Willem Dafoe
+    4) cast member - Brendan Gleeson
+    5) cast member - Jim Broadbent
+    Recommend
+    Next Page ->
+    2
+
+    Based on your current preferences, this R rated movie may be suited for you: 
+    "Gangs of New York"
+    Because it has these properties that are relevant to you: 
+    1) director - Martin Scorsese
+    2) genre - drama
+    3) cast member - Leonardo DiCaprio
+    4) cast member - Liam Neeson
     Did you like the recommendation, didn't like the recommendation or have you already watched the movie? (yes/no/watched)
     yes
 
-    Have a good time watching the movie "The Curious Case of Benjamin Button". Please come again!
+    Have a good time watching the movie "Gangs of New York". Please come again!
