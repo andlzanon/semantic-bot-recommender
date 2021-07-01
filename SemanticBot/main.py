@@ -127,10 +127,10 @@ while not end_conversation:
                 exit = False
                 while not exit:
                     if resp == "Next Page":
-                        page_start = page_end + 1
+                        page_start = page_end
                         page_end = page_start + page_len
                     elif resp == "Previous Page":
-                        page_end = page_start - 1
+                        page_end = page_start
                         page_start = page_end - page_len
                     else:
                         force_rec = True
