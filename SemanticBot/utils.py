@@ -171,7 +171,7 @@ def order_props_pr(sub_graph: pd.DataFrame, global_zscore: pd.DataFrame, edgelis
     (weight_vec_rank[1] * pr of full graph of value (di Caprio, etc)) +
     (weight_vec_rank[2] * pr of sub graph of value
     :param sub_graph: sub graph that represents the current graph that matches the users preferences
-    :param global_zscore:
+    :param global_zscore: global zscore property 
     :param edgelist: edge list of users and movies from the dataset. The dataframe has two columns, the origin of the
         edge and the destination
     :param watched: movies that the user watched
