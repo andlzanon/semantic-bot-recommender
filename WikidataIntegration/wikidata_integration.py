@@ -38,8 +38,7 @@ def get_movie_data_from_wikidata(slice_movie_set: pd.DataFrame):
             ?propertyRel = wdt:P725 ||  ?propertyRel = wdt:P1040 ||
             ?propertyRel = wdt:P86 || ?propertyRel = wdt:P162 ||  ?propertyRel = wdt:P272 || 
             ?propertyRel = wdt:P344 || ?propertyRel = wdt:P166 || ?propertyRel = wdt:P1411 || 
-            ?propertyRel = wdt:P2515 ||
-            ?propertyRel = wdt:P921 || ?propertyRel = wdt:P175
+            ?propertyRel = wdt:P2515 || ?propertyRel = wdt:P175
           )  
         }
         ORDER BY ?imdbId"""
@@ -113,7 +112,10 @@ while end <= total:
 print("End obtaining movie data")
 
 # save output
-all_movie_props.to_csv("./wikidata_integration_small.csv", mode='w', header=True, index=False)
+cov = len(all_movie_props['movie_id'].unique())/s_all_movies
+print(str(cov))
+if cov > 0.85:
+    all_movie_props.to_csv("./wikidata_integration_small.csv", mode='w', header=True, index=False)
 print("Coverage: " + str(len(all_movie_props['movie_id'].unique())) + " obtained of " + str(s_all_movies)
-      + ". Percentage: " + str(len(all_movie_props['movie_id'].unique())/s_all_movies))
+      + ". Percentage: " + str(cov))
 print('Output file generated')
